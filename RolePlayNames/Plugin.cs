@@ -14,7 +14,7 @@ namespace RolePlayNames
     {
         public override string Name { get; } = "RP Names";
         public override string Author { get; } = ".fkn_goose";
-        public override Version Version => new Version(0, 1, 1);
+        public override Version Version => new Version(0, 1, 2);
 
         private Handlers handler;
         public override void OnEnabled()
