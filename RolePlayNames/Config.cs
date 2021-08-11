@@ -11,8 +11,6 @@ namespace RolePlayNames
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
-        //хуй пойми через конфиг не работает, потом разберусь
-        //[Description("Science Status depends on start keycard")]
-        //public string[] ScienceStatus { get; } ={ "Стажер", "Д-р ", "Руководитель зоны д-р " , "Ст. научный сотрудник ", "Инженер камер содержания " , "Руководитель комплекса д-р " };
+        public float HintDisplayTime { get; set; } = 10;
     }
 }
