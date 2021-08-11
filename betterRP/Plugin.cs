@@ -13,9 +13,9 @@ namespace betterRP
 {
     public class Plugin : Plugin<Config>
     {
-        public override string Name { get; } = "RP Names";
+        public override string Name { get; } = "betterRP";
         public override string Author { get; } = ".fkn_goose";
-        public override Version Version => new Version(0, 3, 1);
+        public override Version Version => new Version(0, 3, 2);
         public static readonly Lazy<Plugin> LazyInstance = new Lazy<Plugin>(valueFactory: () => new Plugin());
         public static Plugin PluginItem => LazyInstance.Value;
         private PlayerNames PlayerNames;
@@ -25,13 +25,13 @@ namespace betterRP
             PlayerNames = new PlayerNames();
             PlayerResize = new PlayerResize();
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
-            PlayerEv.ChangingRole += PlayerResize.OnChangingRole;
+            PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
             base.OnEnabled();
         }
         public override void OnDisabled()
         {
             PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
-            PlayerEv.ChangingRole -= PlayerResize.OnChangingRole;
+            PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
             PlayerNames = null;
             PlayerResize = null;
             base.OnDisabled();
