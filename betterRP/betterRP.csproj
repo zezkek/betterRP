@@ -7,8 +7,8 @@
     <ProjectGuid>{BB2E24C0-C84E-46BA-9EA1-54D6D8D1F254}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RolePlayNames</RootNamespace>
-    <AssemblyName>RolePlayNames</AssemblyName>
+    <RootNamespace>betterRP</RootNamespace>
+    <AssemblyName>betterRP</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -85,10 +85,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\sl_server\SCPSL_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\sl_server\SCPSL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
-    <Compile Include="Handlers.cs" />
+    <Compile Include="Handlers\PlayerNames.cs" />
+    <Compile Include="Handlers\PlayerResize.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

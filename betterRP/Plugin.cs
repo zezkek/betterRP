@@ -1,5 +1,6 @@
 ﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs;
+using RolePlayNames.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 using PlayerEv = Exiled.Events.Handlers.Player;
 
-namespace RolePlayNames
+namespace betterRP
 {
     public class Plugin : Plugin<Config>
     {
@@ -17,17 +18,22 @@ namespace RolePlayNames
         public override Version Version => new Version(0, 2, 0);
         public static readonly Lazy<Plugin> LazyInstance = new Lazy<Plugin>(valueFactory: () => new Plugin());
         public static Plugin PluginItem => LazyInstance.Value;
-        private Handlers handler;
+        private PlayerNames PlayerNames;
+        private PlayerResize PlayerResize;
         public override void OnEnabled()
         {
-            handler = new Handlers();
-            PlayerEv.ChangedRole += handler.OnChangedRole;
+            PlayerNames = new PlayerNames();
+            PlayerResize = new PlayerResize();
+            PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
+            PlayerEv.ChangingRole += PlayerResize.OnChangingRole;
             base.OnEnabled();
         }
         public override void OnDisabled()
         {
-            PlayerEv.ChangedRole -= handler.OnChangedRole;
-            handler = null;
+            PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
+            PlayerEv.ChangingRole -= PlayerResize.OnChangingRole;
+            PlayerNames = null;
+            PlayerResize = null;
             base.OnDisabled();
         }
     }
