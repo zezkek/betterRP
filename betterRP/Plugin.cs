@@ -15,7 +15,7 @@ namespace betterRP
     {
         public override string Name { get; } = "RP Names";
         public override string Author { get; } = ".fkn_goose";
-        public override Version Version => new Version(0, 2, 0);
+        public override Version Version => new Version(0, 3, 1);
         public static readonly Lazy<Plugin> LazyInstance = new Lazy<Plugin>(valueFactory: () => new Plugin());
         public static Plugin PluginItem => LazyInstance.Value;
         private PlayerNames PlayerNames;
