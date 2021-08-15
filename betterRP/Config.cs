@@ -47,5 +47,17 @@ namespace betterRP
             "Яникс",
             "Лем"
         };
+        public List<string> CHINames { get; set; } = new List<string>
+        {
+            "Сансаныч",
+            "Намбер",
+            "Бомж",
+            "Ангра",
+            "Феня",
+            "Кость",
+            "Молоко",
+            "Яникс",
+            "Лем"
+        };
     }
 }
