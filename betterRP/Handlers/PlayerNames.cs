@@ -14,9 +14,10 @@ namespace betterRP
     {
         public PlayerNames NameHandler;
         Random rnd = new Random();
-        string[] ScientistSurname = File.ReadAllLines(@"Names\ScientistSurnames.txt");
+        List<string> ScientistAndSecuritySurname = Plugin.PluginItem.Config.ScientistAndSecuritySurname;
         string[] ChaosNickname = File.ReadAllLines(@"Names\ChaosNicknames.txt");
         string[] NTFNickName = File.ReadAllLines(@"Names\NTFNickNames.txt");
+        string selectedname;
         public void OnChangedRole(ChangedRoleEventArgs ev)
         {
             if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
@@ -43,27 +44,34 @@ namespace betterRP
                             switch (MaxKeycard)
                             {
                                 case ItemType.KeycardO5:
-                                    ev.Player.DisplayNickname = ("Д-р " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
+                                    ev.Player.DisplayNickname = ("Д-р " + selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>научный сотрудник</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                                 case ItemType.KeycardScientist:
-                                    ev.Player.DisplayNickname = ("Д-р " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>научный сотрудник</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                                 case ItemType.KeycardZoneManager:
-                                    ev.Player.DisplayNickname = ("Руководитель зоны д-р " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>член руководства комплекса</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                                 case ItemType.KeycardScientistMajor:
-                                    ev.Player.DisplayNickname = ("Ст. научный сотрудник " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>научный сотрудник</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                                 case ItemType.KeycardContainmentEngineer:
-                                    ev.Player.DisplayNickname = ("Инженер камер содержания " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>инженер комплекса</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                                 case ItemType.KeycardFacilityManager:
-                                    ev.Player.DisplayNickname = ("Руководитель комплекса д-р " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
                                     ev.Player.ShowHint("\n\nВы <color=yellow>член руководства комплекса</color>, Ваша должность <color=yellow>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                                     break;
                             }
@@ -81,16 +89,24 @@ namespace betterRP
                             switch (MaxKeycardSec)
                             {
                                 case ItemType.KeycardO5:
-                                    ev.Player.DisplayNickname = ("Мл. Охранник " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
+                                    ev.Player.DisplayNickname = ("Мл. Охранник " + selectedname);
                                     break;
                                 case ItemType.KeycardGuard:
-                                    ev.Player.DisplayNickname = ("Охранник " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
+                                    ev.Player.DisplayNickname = ("Охранник " + selectedname);
                                     break;
                                 case ItemType.KeycardNTFLieutenant:
-                                    ev.Player.DisplayNickname = ("Ст. Охранник " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
+                                    ev.Player.DisplayNickname = ("Ст. Охранник " + selectedname);
                                     break;
                                 case ItemType.KeycardNTFCommander:
-                                    ev.Player.DisplayNickname = ("Офицер " + ScientistSurname[rnd.Next(ScientistSurname.Length)]);
+                                    selectedname = ScientistAndSecuritySurname[rnd.Next(ScientistAndSecuritySurname.Count)];
+                                    ScientistAndSecuritySurname.Remove(selectedname);
+                                    ev.Player.DisplayNickname = ("Офицер " + selectedname);
                                     break;
                             }
                             ev.Player.ShowHint("\n\nВы сотрудник <color=gray>СБ комплекса</color>, Ваша должность <color=gray>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
@@ -112,7 +128,7 @@ namespace betterRP
                             break;
 
                         case RoleType.NtfScientist:
-                            ev.Player.DisplayNickname = ("Специалист по содержанию '" + NTFNickName[rnd.Next(NTFNickName.Length)] + "' " + ScientistSurname[rnd.Next(ScientistSurname.Length)][0] + ".");
+                            ev.Player.DisplayNickname = ("Специалист по ВУС '" + NTFNickName[rnd.Next(NTFNickName.Length)] + "' " + ScientistSurname[rnd.Next(ScientistSurname.Length)][0] + ".");
                             ev.Player.ShowHint("\n\nВы член <color=#0000CD>МОГ Эпсилон-11</color>, Ваша должность <color=#0000CD>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 

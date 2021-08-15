@@ -17,5 +17,35 @@ namespace betterRP
         public bool PlayerResizeEnabled { get; set; } = true;
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
+        [Description("New Science Names")]
+        public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
+            "Адамс","Элисон",
+            "Андерсон","Бейкер",
+            "Барретт","Белл",
+            "Беннетт","Блэк",
+            "Брукс","Картер",
+            "Кларк","Коул",
+            "Купер","Дэвис",
+            "Эдвардс","Эллис",
+            "Эванс","Фишер",
+            "Фостер","Гибсон",
+            "Харрис","Харт",
+            "Говард","Льюис",
+            "Линн","Митчел",
+            "Петерс","Рэй",
+            "Робертс"};
+        [Description("New MTF Names")]
+        public List<string> MTFNames { get; set; } = new List<string>
+        {
+            "Сансаныч",
+            "Намбер",
+            "Бомж",
+            "Ангра",
+            "Феня",
+            "Кость",
+            "Молоко",
+            "Яникс",
+            "Лем"
+        };
     }
 }
