@@ -17,6 +17,10 @@ namespace betterRP
         public bool PlayerResizeEnabled { get; set; } = true;
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
+        /* Отключено до исправления
+         * [Description("Distance between players and receivers of DoMessage")]
+         * public float DoDistance { get; set; } = 10;
+         */
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",
