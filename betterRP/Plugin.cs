@@ -22,13 +22,17 @@ namespace betterRP
         public static Plugin PluginItem => LazyInstance.Value;
         private PlayerNames PlayerNames;
         private PlayerResize PlayerResize;
+        private GrenadesAdditionalEffects GrenadesAdditionalEffects;
         public override void OnEnabled()
         {
             //commandMethods = new CommandMethods(this);
             PlayerNames = new PlayerNames();
             PlayerResize = new PlayerResize();
+            GrenadesAdditionalEffects = new GrenadesAdditionalEffects();
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
+            PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
+            PlayerEv.ReceivingEffect += GrenadesAdditionalEffects.OnFlash;
             base.OnEnabled();
         }
         public override void OnDisabled()
@@ -36,8 +40,11 @@ namespace betterRP
             //commandMethods = null;
             PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
+            PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
+            PlayerEv.ReceivingEffect -= GrenadesAdditionalEffects.OnFlash;
             PlayerNames = null;
             PlayerResize = null;
+            GrenadesAdditionalEffects = null;
             base.OnDisabled();
         }
     }

@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 namespace betterRP.Commands.Do
 {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    [CommandHandler(typeof(ClientCommandHandler))]
     [CommandHandler(typeof(GameConsoleCommandHandler))]
     public class Do : ParentCommand
     {
@@ -21,7 +22,7 @@ namespace betterRP.Commands.Do
 
         public override string[] Aliases { get; } = new string[] { };
 
-        public override string Description { get; } = "Print RP message to alive players in specific range";
+        public override string Description { get; } = "Вывод РП-сообщения игрокам поблизости";
 
         public override void LoadGeneratedCommands() { }
 
