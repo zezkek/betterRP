@@ -22,62 +22,60 @@ namespace betterRP
         {
             this.plugin = plugin;
         }
-        public void OnFlash(ThrowingGrenadeEventArgs ev)
+
+        public void OnFlash(ExplodingGrenadeEventArgs ev)
         {
-            if (ev.Type != GrenadeType.Flashbang) return;
+            if (ev.IsFrag) return;
             if(plugin.Config.Debug)
                 Log.Debug("Event OnFlash has been taken");
-            plugin.NewCoroutine(FlashDelay(ev));
-        }
-        IEnumerator<float> FlashDelay(ThrowingGrenadeEventArgs ev)
-        {
-            if (plugin.Config.Debug)
-                Log.Debug("IEnumerator<float> FlashDelay has been started");
-            yield return MEC.Timing.WaitForSeconds(4f);
-            foreach(Player player in Player.List)
+            foreach (Player player in Player.List)
             {
-                if(Vector3.Distance(ev.Player.Position, player.Position) <= 10)
+                if (plugin.Config.Debug)
+                    Log.Debug($"Distance Difference between grenade {ev.Grenade.transform.position}" +
+                        $" and possible target {player.Nickname}:" +
+                        $" {Vector3.Distance(ev.Grenade.transform.position, player.Position)}");
+                if (Vector3.Distance(ev.Grenade.transform.position, player.Position) <= 10)
                 {
                     switch (player.Role)
                     {
                         case RoleType.None:
-                            yield break;
+                            break;
                         case RoleType.Scp173:
-                            yield break;
+                            break;
                         case RoleType.Spectator:
-                            yield break;
+                            break;
                         case RoleType.Scp106:
-                            yield break;
+                            break;
                         case RoleType.Scp079:
-                            yield break;
+                            break;
                         case RoleType.Scp096:
-                            yield break;
+                            break;
                         case RoleType.Tutorial:
-                            yield break;
+                            break;
                         case RoleType.Scp93953:
                             if (plugin.Config.Debug)
                                 Log.Debug("Giving flash effects for 939.53");
-                            ev.Player.EnableEffect(EffectType.Flashed, duration: 6);
-                            ev.Player.EnableEffect(EffectType.Ensnared, duration: 6);
-                            yield break;
+                            player.EnableEffect(EffectType.Flashed, duration: 6);
+                            player.EnableEffect(EffectType.Ensnared, duration: 6);
+                            break;
                         case RoleType.Scp93989:
                             if (plugin.Config.Debug)
                                 Log.Debug("Giving flash effects for 939.89");
-                            ev.Player.EnableEffect(EffectType.Flashed, duration: 6);
-                            ev.Player.EnableEffect(EffectType.Ensnared, duration: 6);
-                            yield break;
+                            player.EnableEffect(EffectType.Flashed, duration: 6);
+                            player.EnableEffect(EffectType.Ensnared, duration: 6);
+                            break;
                         default:
                             if (plugin.Config.Debug)
                                 Log.Debug("Giving flash effects for others");
-                            ev.Player.EnableEffect(EffectType.Flashed, duration: 6);
-                            ev.Player.EnableEffect(EffectType.Blinded, duration: 12);
-                            ev.Player.EnableEffect(EffectType.Deafened, duration: 12);
-                            ev.Player.EnableEffect(EffectType.Concussed, duration: 30);
-                            yield break;
+                            player.EnableEffect(EffectType.Blinded, duration: 12);
+                            player.EnableEffect(EffectType.Deafened, duration: 12);
+                            player.EnableEffect(EffectType.Concussed, duration: 30);
+                            break;
                     }
                 }
             }
         }
+
         public void OnDamage(HurtingEventArgs ev)
         {
             if (plugin.Config.Debug)

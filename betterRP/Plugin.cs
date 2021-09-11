@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using PlayerEv = Exiled.Events.Handlers.Player;
+using MapEv = Exiled.Events.Handlers.Map;
 
 namespace betterRP
 {
@@ -44,7 +45,7 @@ namespace betterRP
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
             PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
-            PlayerEv.ThrowingGrenade += GrenadesAdditionalEffects.OnFlash;
+            MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
             base.OnEnabled();
         }
         public override void OnDisabled()
@@ -55,7 +56,7 @@ namespace betterRP
             PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
             PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
-            PlayerEv.ThrowingGrenade -= GrenadesAdditionalEffects.OnFlash;
+            MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
             PlayerNames = null;
             PlayerResize = null;
             GrenadesAdditionalEffects = null;
