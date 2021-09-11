@@ -26,8 +26,12 @@ namespace betterRP
         public void OnFlash(ExplodingGrenadeEventArgs ev)
         {
             if (ev.IsFrag) return;
-            if(plugin.Config.Debug)
+            if (plugin.Config.Debug)
+            {
                 Log.Debug("Event OnFlash has been taken");
+                Log.Debug($"Count of targets: {ev.Targets.Count}");
+            }
+
             foreach (Player player in Player.List)
             {
                 if (plugin.Config.Debug)
@@ -54,25 +58,64 @@ namespace betterRP
                             break;
                         case RoleType.Scp93953:
                             if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.53");
+                                Log.Debug("Giving flash effects for 939.53. Distance less than 15");
                             player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Ensnared, duration: 6);
                             break;
                         case RoleType.Scp93989:
                             if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.89");
+                                Log.Debug("Giving flash effects for 939.89. Distance less than 15");
                             player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Ensnared, duration: 6);
                             break;
                         default:
                             if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for others");
+                                Log.Debug("Giving flash effects for others. Distance less than 15");
+                            player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Blinded, duration: 12);
                             player.EnableEffect(EffectType.Deafened, duration: 12);
                             player.EnableEffect(EffectType.Concussed, duration: 30);
                             break;
                     }
                 }
+                else if (Vector3.Distance(ev.Grenade.transform.position, player.Position) <= 25)
+                {
+                    switch (player.Role)
+                    {
+                        case RoleType.None:
+                            break;
+                        case RoleType.Scp173:
+                            break;
+                        case RoleType.Spectator:
+                            break;
+                        case RoleType.Scp106:
+                            break;
+                        case RoleType.Scp079:
+                            break;
+                        case RoleType.Scp096:
+                            break;
+                        case RoleType.Tutorial:
+                            break;
+                        case RoleType.Scp93953:
+                            if (plugin.Config.Debug)
+                                Log.Debug("Giving flash effects for 939.53. Distance less than 25");
+                            player.EnableEffect(EffectType.Flashed, duration: 3);
+                            player.EnableEffect(EffectType.Ensnared, duration: 3);
+                            break;
+                        case RoleType.Scp93989:
+                            if (plugin.Config.Debug)
+                                Log.Debug("Giving flash effects for 939.89. Distance less than 25");
+                            player.EnableEffect(EffectType.Flashed, duration: 3);
+                            player.EnableEffect(EffectType.Ensnared, duration: 3);
+                            break;
+                        default:
+                            if (plugin.Config.Debug)
+                                Log.Debug("Giving flash effects for others. Distance less than 25");
+                            player.EnableEffect(EffectType.Deafened, duration: 6);
+                            player.EnableEffect(EffectType.Concussed, duration: 15);
+                            break;
+                    }
+                }    
             }
         }
 
