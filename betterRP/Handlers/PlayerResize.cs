@@ -19,7 +19,7 @@ namespace RolePlayNames.Handlers
         public void OnChangedRoleEventArgs(ChangedRoleEventArgs ev)
         {
             Vector3 resize = new Vector3(1, 1, 1);
-            if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
+            if (Plugin.PluginItem.Config.PlayerResizeEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
             {
                 if (ev.Player.IsHuman)
                 {
@@ -29,7 +29,7 @@ namespace RolePlayNames.Handlers
                     ev.Player.Scale = resize;
                 }
                 else
-                    ev.Player.Scale = resize;
+                    ev.Player.Scale = new Vector3(1,1,1);
             }
         }
     }

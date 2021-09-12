@@ -17,6 +17,8 @@ namespace betterRP
         public bool PlayerResizeEnabled { get; set; } = true;
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
+        [Description("Jumping drains stamina")]
+        public float JumpDrainStamina { get; set; } = 20;
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",
