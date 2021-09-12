@@ -37,7 +37,7 @@ namespace betterRP.Commands.Do
                 return false;
             }
 
-            if (arguments.Count != 1)
+            if (arguments.Count < 1)
             {
                 response = "Использование команды: do ВАШЕ СООБЩЕНИЕ";
                 return false;
@@ -49,7 +49,7 @@ namespace betterRP.Commands.Do
                     msg += string.Join(" ", arguments.Segment(0));
                     msg = Regex.Replace(msg, "<[^>]*>", "");
                     foreach (Player Ply in Player.List.Where(p => (p.Role != RoleType.Spectator || p.Role != RoleType.None) 
-                    && UnityEngine.Vector3.Distance(player_requester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно сюда обьекта класса Plugin*/))
+                    && UnityEngine.Vector3.Distance(player_requester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно сюда обьект класса Plugin*/))
                         Ply.Broadcast(15, msg);
                     Log.Info(msg);
 
