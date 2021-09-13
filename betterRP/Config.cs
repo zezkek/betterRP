@@ -11,12 +11,18 @@ namespace betterRP
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
+        [Description("Enable or disable debug mode")]
+        public bool Debug { get; set; } = false;
         [Description("Enable or disable name change")]
         public bool PlayerNamesEnabled { get; set; } = true;
         [Description("Enable or disable player resize")]
         public bool PlayerResizeEnabled { get; set; } = true;
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
+        /* Отключено до исправления
+         * [Description("Distance between players and receivers of DoMessage")]
+         * public float DoDistance { get; set; } = 10;
+         */
         [Description("Jumping drains stamina")]
         public float JumpDrainStamina { get; set; } = 20;
         [Description("New Science Names")]
