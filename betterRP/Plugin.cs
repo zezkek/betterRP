@@ -32,6 +32,7 @@ namespace betterRP
         private PlayerResize PlayerResize;
         private GrenadesAdditionalEffects GrenadesAdditionalEffects;
         private StartsBlackout startsBlackout;
+        private PlayerLeave replaceSCP;
         public override void OnEnabled()
         {
             if (!Config.IsEnabled)
@@ -45,6 +46,7 @@ namespace betterRP
             PlayerResize = new PlayerResize();
             GrenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
 
+            replaceSCP = new PlayerLeave();
             startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
@@ -52,6 +54,7 @@ namespace betterRP
             PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
 
+            PlayerEv.Left += replaceSCP.OnDisconnect;
             SvEv.RoundStarted += startsBlackout.OnRoundStarted;
 
             base.OnEnabled();
@@ -66,6 +69,7 @@ namespace betterRP
             PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
 
+            PlayerEv.Left -= replaceSCP.OnDisconnect;
             SvEv.RoundStarted -= startsBlackout.OnRoundStarted;
 
             PlayerNames = null;

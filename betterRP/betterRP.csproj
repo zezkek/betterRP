@@ -137,6 +137,7 @@
     <Compile Include="Handlers\GrenadesAdditionalEffects.cs" />
     <Compile Include="Handlers\PlayerNames.cs" />
     <Compile Include="Handlers\PlayerResize.cs" />
+    <Compile Include="Handlers\PlayerLeave.cs" />
     <Compile Include="Handlers\StartsBlackout.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
