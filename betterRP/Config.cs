@@ -1,10 +1,7 @@
-﻿using Exiled.API.Interfaces;
-using System;
+﻿using Exiled.API.Enums;
+using Exiled.API.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace betterRP
 {
@@ -23,6 +20,7 @@ namespace betterRP
          * [Description("Distance between players and receivers of DoMessage")]
          * public float DoDistance { get; set; } = 10;
          */
+        public float BlackoutDelay { get; set; } = 15f;
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",

@@ -57,14 +57,9 @@ namespace betterRP
                         case RoleType.Tutorial:
                             break;
                         case RoleType.Scp93953:
-                            if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.53. Distance less than 15");
-                            player.EnableEffect(EffectType.Flashed, duration: 6);
-                            player.EnableEffect(EffectType.Ensnared, duration: 6);
-                            break;
                         case RoleType.Scp93989:
                             if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.89. Distance less than 15");
+                                Log.Debug("Giving flash effects for 939. Distance less than 15");
                             player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Ensnared, duration: 6);
                             break;
@@ -97,14 +92,9 @@ namespace betterRP
                         case RoleType.Tutorial:
                             break;
                         case RoleType.Scp93953:
-                            if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.53. Distance less than 25");
-                            player.EnableEffect(EffectType.Flashed, duration: 3);
-                            player.EnableEffect(EffectType.Ensnared, duration: 3);
-                            break;
                         case RoleType.Scp93989:
                             if (plugin.Config.Debug)
-                                Log.Debug("Giving flash effects for 939.89. Distance less than 25");
+                                Log.Debug("Giving flash effects for 939. Distance less than 25");
                             player.EnableEffect(EffectType.Flashed, duration: 3);
                             player.EnableEffect(EffectType.Ensnared, duration: 3);
                             break;
@@ -143,14 +133,9 @@ namespace betterRP
                 case RoleType.Tutorial:
                     break;
                 case RoleType.Scp93953:
-                    if (plugin.Config.Debug)
-                        Log.Debug("Giving frag effects for 939.53");
-                    ev.Target.EnableEffect(EffectType.Blinded, duration: 6);
-                    ev.Target.EnableEffect(EffectType.Ensnared, duration: 6);
-                    break;
                 case RoleType.Scp93989:
                     if (plugin.Config.Debug)
-                        Log.Debug("Giving frag effects for 939.89");
+                        Log.Debug("Giving frag effects for 939");
                     ev.Target.EnableEffect(EffectType.Blinded, duration: 6);
                     ev.Target.EnableEffect(EffectType.Ensnared, duration: 6);
                     break;

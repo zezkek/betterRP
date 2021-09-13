@@ -10,6 +10,7 @@ using UnityEngine;
 
 using PlayerEv = Exiled.Events.Handlers.Player;
 using MapEv = Exiled.Events.Handlers.Map;
+using SvEv = Exiled.Events.Handlers.Server;
 
 namespace betterRP
 {
@@ -30,6 +31,7 @@ namespace betterRP
         private PlayerNames PlayerNames;
         private PlayerResize PlayerResize;
         private GrenadesAdditionalEffects GrenadesAdditionalEffects;
+        private StartsBlackout startsBlackout;
         public override void OnEnabled()
         {
             if (!Config.IsEnabled)
@@ -42,10 +44,16 @@ namespace betterRP
             PlayerNames = new PlayerNames();
             PlayerResize = new PlayerResize();
             GrenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
+
+            startsBlackout = new StartsBlackout(this);
+
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
             PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
+
+            SvEv.RoundStarted += startsBlackout.OnRoundStarted;
+
             base.OnEnabled();
         }
         public override void OnDisabled()
@@ -57,9 +65,13 @@ namespace betterRP
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
             PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
+
+            SvEv.RoundStarted -= startsBlackout.OnRoundStarted;
+
             PlayerNames = null;
             PlayerResize = null;
             GrenadesAdditionalEffects = null;
+            startsBlackout = null;
             base.OnDisabled();
 
             if (Config.IsEnabled)
