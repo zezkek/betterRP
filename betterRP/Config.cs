@@ -19,6 +19,7 @@ namespace betterRP
         public float HintDisplayTime { get; set; } = 10;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         [Description("Jumping drains stamina")]
         public float JumpDrainStamina { get; set; } = 20;
 =======
@@ -28,6 +29,8 @@ namespace betterRP
          */
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
 =======
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         [Description("Jumping drains stamina")]
         public float JumpDrainStamina { get; set; } = 20;
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)

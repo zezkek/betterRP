@@ -69,6 +69,9 @@
   <ItemGroup>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
 =======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
     <Reference Include="0Harmony">
@@ -102,6 +105,7 @@
     <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CreditTags.dll</HintPath>
     </Reference>
+<<<<<<< HEAD
 =======
     <Reference Include="Exiled.Bootstrap, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.Bootstrap.dll</HintPath>
@@ -109,6 +113,8 @@
     <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CreditTags.dll</HintPath>
     </Reference>
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
+=======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
     <Reference Include="Exiled.CustomItems, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CustomItems.dll</HintPath>

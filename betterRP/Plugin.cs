@@ -16,6 +16,7 @@ namespace betterRP
         public override string Name { get; } = "betterRP";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         public override string Author { get; } = ".fkn_goose";
         public override Version Version => new Version(0, 5, 0);
 =======
@@ -30,6 +31,8 @@ namespace betterRP
         //public CommandMethods commandMethods;
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
 =======
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         public override string Author { get; } = ".fkn_goose";
         public override Version Version => new Version(0, 5, 0);
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
@@ -39,6 +42,9 @@ namespace betterRP
         private PlayerResize PlayerResize;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
 =======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         private ReplaceSCP ReplaceSCP;
@@ -54,6 +60,9 @@ namespace betterRP
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
 =======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             //PlayerEv.SyncingData += PlayerNames.OnSyncingData;
@@ -70,6 +79,9 @@ namespace betterRP
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
 =======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             //PlayerEv.SyncingData -= PlayerNames.OnSyncingData;
@@ -78,6 +90,7 @@ namespace betterRP
             PlayerResize = null;
             //ReplaceSCP = null;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
@@ -85,6 +98,8 @@ namespace betterRP
             PlayerResize = null;
             GrenadesAdditionalEffects = null;
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
 =======
 >>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             base.OnDisabled();
