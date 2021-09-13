@@ -1,5 +1,7 @@
-﻿using Exiled.API.Features;
+﻿using betterRP.Handlers;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs;
+using Exiled.Events.Handlers;
 using RolePlayNames.Handlers;
 using System;
 using System.Collections.Generic;
@@ -25,11 +27,14 @@ namespace betterRP
 
         //Для передачи объекта класса Plugin и получения с него конфигов для команд
         //public CommandMethods commandMethods;
+        public override string Author { get; } = ".fkn_goose";
+        public override Version Version => new Version(0, 5, 0);
         public static readonly Lazy<Plugin> LazyInstance = new Lazy<Plugin>(valueFactory: () => new Plugin());
         public static Plugin PluginItem => LazyInstance.Value;
         private PlayerNames PlayerNames;
         private PlayerResize PlayerResize;
         private GrenadesAdditionalEffects GrenadesAdditionalEffects;
+        private ReplaceSCP ReplaceSCP;
         public override void OnEnabled()
         {
             if (!Config.IsEnabled)
@@ -46,6 +51,9 @@ namespace betterRP
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
             PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
+            //ReplaceSCP = new ReplaceSCP();
+            //PlayerEv.SyncingData += PlayerNames.OnSyncingData;
+            //PlayerEv.Left += ReplaceSCP.OnDisconnect;
             base.OnEnabled();
         }
         public override void OnDisabled()
@@ -60,6 +68,9 @@ namespace betterRP
             PlayerNames = null;
             PlayerResize = null;
             GrenadesAdditionalEffects = null;
+            //PlayerEv.SyncingData -= PlayerNames.OnSyncingData;
+            //PlayerEv.Left -= ReplaceSCP.OnDisconnect;
+            //ReplaceSCP = null;
             base.OnDisabled();
 
             if (Config.IsEnabled)

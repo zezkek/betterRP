@@ -23,6 +23,8 @@ namespace betterRP
          * [Description("Distance between players and receivers of DoMessage")]
          * public float DoDistance { get; set; } = 10;
          */
+        [Description("Jumping drains stamina")]
+        public float JumpDrainStamina { get; set; } = 20;
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",
