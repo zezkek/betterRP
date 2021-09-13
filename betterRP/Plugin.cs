@@ -15,6 +15,7 @@ namespace betterRP
     {
         public override string Name { get; } = "betterRP";
 <<<<<<< HEAD
+<<<<<<< HEAD
         public override string Author { get; } = ".fkn_goose";
         public override Version Version => new Version(0, 5, 0);
 =======
@@ -28,11 +29,18 @@ namespace betterRP
         //Для передачи объекта класса Plugin и получения с него конфигов для команд
         //public CommandMethods commandMethods;
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
+=======
+        public override string Author { get; } = ".fkn_goose";
+        public override Version Version => new Version(0, 5, 0);
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         public static readonly Lazy<Plugin> LazyInstance = new Lazy<Plugin>(valueFactory: () => new Plugin());
         public static Plugin PluginItem => LazyInstance.Value;
         private PlayerNames PlayerNames;
         private PlayerResize PlayerResize;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         private ReplaceSCP ReplaceSCP;
 =======
         private GrenadesAdditionalEffects GrenadesAdditionalEffects;
@@ -45,6 +53,9 @@ namespace betterRP
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             //PlayerEv.SyncingData += PlayerNames.OnSyncingData;
             //PlayerEv.Left += ReplaceSCP.OnDisconnect;
 =======
@@ -58,11 +69,15 @@ namespace betterRP
             PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             //PlayerEv.SyncingData -= PlayerNames.OnSyncingData;
             //PlayerEv.Left -= ReplaceSCP.OnDisconnect;
             PlayerNames = null;
             PlayerResize = null;
             //ReplaceSCP = null;
+<<<<<<< HEAD
 =======
             PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
             MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
@@ -70,6 +85,8 @@ namespace betterRP
             PlayerResize = null;
             GrenadesAdditionalEffects = null;
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
             base.OnDisabled();
         }
     }

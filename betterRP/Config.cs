@@ -18,6 +18,7 @@ namespace betterRP
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
 <<<<<<< HEAD
+<<<<<<< HEAD
         [Description("Jumping drains stamina")]
         public float JumpDrainStamina { get; set; } = 20;
 =======
@@ -26,6 +27,10 @@ namespace betterRP
          * public float DoDistance { get; set; } = 10;
          */
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
+=======
+        [Description("Jumping drains stamina")]
+        public float JumpDrainStamina { get; set; } = 20;
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",

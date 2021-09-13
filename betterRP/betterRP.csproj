@@ -68,6 +68,9 @@
   </PropertyGroup>
   <ItemGroup>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
     <Reference Include="0Harmony">
       <HintPath>..\..\..\ExiledTryharding\EXILED\Plugins\dependencies\0Harmony.dll</HintPath>
     </Reference>
@@ -88,6 +91,7 @@
     <Reference Include="Assembly-CSharp-Publicized">
       <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
+<<<<<<< HEAD
     <Reference Include="CommandSystem.Core">
       <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\CommandSystem.Core.dll</HintPath>
 >>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
@@ -98,6 +102,14 @@
     <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CreditTags.dll</HintPath>
     </Reference>
+=======
+    <Reference Include="Exiled.Bootstrap, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.Bootstrap.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CreditTags.dll</HintPath>
+    </Reference>
+>>>>>>> parent of 1854b80 (Merge pull request #2 from zezkek/devM)
     <Reference Include="Exiled.CustomItems, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.CustomItems.dll</HintPath>
     </Reference>
