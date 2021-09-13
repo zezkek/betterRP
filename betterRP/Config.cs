@@ -1,4 +1,4 @@
-﻿using Exiled.API.Interfaces;
+using Exiled.API.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,15 +17,12 @@ namespace betterRP
         public bool PlayerResizeEnabled { get; set; } = true;
         [Description("New name hint message time")]
         public float HintDisplayTime { get; set; } = 10;
-<<<<<<< HEAD
         [Description("Jumping drains stamina")]
         public float JumpDrainStamina { get; set; } = 20;
-=======
         /* Отключено до исправления
          * [Description("Distance between players and receivers of DoMessage")]
          * public float DoDistance { get; set; } = 10;
          */
->>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
         [Description("New Science Names")]
         public List<string> ScientistAndSecuritySurname { get; set; } = new List<string> { 
             "Адамс","Элисон",

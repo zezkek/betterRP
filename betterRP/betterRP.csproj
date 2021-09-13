@@ -66,8 +66,6 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <ItemGroup>
-<<<<<<< HEAD
     <Reference Include="0Harmony">
       <HintPath>..\..\..\ExiledTryharding\EXILED\Plugins\dependencies\0Harmony.dll</HintPath>
     </Reference>
@@ -80,17 +78,6 @@
     </Reference>
     <Reference Include="Exiled.API, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.API.dll</HintPath>
-=======
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Assembly-CSharp-Publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="CommandSystem.Core">
-      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\CommandSystem.Core.dll</HintPath>
->>>>>>> parent of 8bf8491 (Merge branch 'master' into devM)
     </Reference>
     <Reference Include="Exiled.Bootstrap, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-ALPHA.36\lib\net472\Exiled.Bootstrap.dll</HintPath>
