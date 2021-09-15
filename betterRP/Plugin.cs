@@ -18,7 +18,7 @@ namespace betterRP
     {
         public override string Name { get; } = "betterRP";
         public override string Author { get; } = ".fkn_goose & Mydak";
-        public override Version Version => new Version(0, 3, 4);
+        public override Version Version => new Version(0, 3, 5);
 
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
         public void AddCoroutine(MEC.CoroutineHandle coroutineHandle) => coroutines.Add(coroutineHandle);
@@ -35,11 +35,11 @@ namespace betterRP
         private PlayerLeave replaceSCP;
         public override void OnEnabled()
         {
-            if (!Config.IsEnabled)
-            {
-                Log.Info("better RP is disabled via configs. It will not be loaded.");
-                return;
-            }
+            //if (!Config.IsEnabled)
+            //{
+            //    Log.Info("better RP is disabled via configs. It will not be loaded.");
+            //    return;
+            //}
             Log.Info("betterRP enabled");
             //commandMethods = new CommandMethods(this);
             PlayerNames = new PlayerNames();
@@ -50,13 +50,14 @@ namespace betterRP
             startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangedRole += PlayerNames.OnChangedRole;
+            PlayerEv.Dying += PlayerNames.OnDying;
             PlayerEv.ChangedRole += PlayerResize.OnChangedRoleEventArgs;
-            PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
-            MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
-
+            PlayerEv.Dying += PlayerResize.OnDying;
             PlayerEv.Left += replaceSCP.OnDisconnect;
+            PlayerEv.Hurting += GrenadesAdditionalEffects.OnDamage;
+            SvEv.RoundStarted += PlayerNames.OnRoundStarted;
             SvEv.RoundStarted += startsBlackout.OnRoundStarted;
-
+            MapEv.ExplodingGrenade += GrenadesAdditionalEffects.OnFlash;
             base.OnEnabled();
         }
         public override void OnDisabled()
@@ -65,12 +66,14 @@ namespace betterRP
             if (coroutines != null && coroutines.Count > 0) MEC.Timing.KillCoroutines(coroutines.ToArray());
 
             PlayerEv.ChangedRole -= PlayerNames.OnChangedRole;
+            PlayerEv.Dying -= PlayerNames.OnDying;
             PlayerEv.ChangedRole -= PlayerResize.OnChangedRoleEventArgs;
-            PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
-            MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
-
+            PlayerEv.Dying -= PlayerResize.OnDying;
             PlayerEv.Left -= replaceSCP.OnDisconnect;
+            PlayerEv.Hurting -= GrenadesAdditionalEffects.OnDamage;
             SvEv.RoundStarted -= startsBlackout.OnRoundStarted;
+            SvEv.RoundStarted -= PlayerNames.OnRoundStarted;
+            MapEv.ExplodingGrenade -= GrenadesAdditionalEffects.OnFlash;
 
             PlayerNames = null;
             PlayerResize = null;
