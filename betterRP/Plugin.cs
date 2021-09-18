@@ -16,9 +16,10 @@ namespace betterRP
 {
     public class Plugin : Plugin<Config>
     {
-        public override string Name { get; } = "betterRP";
+        public override string Name { get; } = "BetterRP";
         public override string Author { get; } = ".fkn_goose & Mydak";
-        public override Version Version => new Version(0, 3, 4);
+        public override string Prefix => "BetterRP";
+        public override Version Version => new Version(0, 3, 5);
 
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
         public void AddCoroutine(MEC.CoroutineHandle coroutineHandle) => coroutines.Add(coroutineHandle);
@@ -37,10 +38,10 @@ namespace betterRP
         {
             if (!Config.IsEnabled)
             {
-                Log.Info("better RP is disabled via configs. It will not be loaded.");
+                Log.Info("Better RP is disabled via configs. It will not be loaded.");
                 return;
             }
-            Log.Info("betterRP enabled");
+            Log.Info("BetterRP enabled");
             //commandMethods = new CommandMethods(this);
             PlayerNames = new PlayerNames();
             PlayerResize = new PlayerResize();
@@ -80,7 +81,7 @@ namespace betterRP
 
             if (Config.IsEnabled)
             {
-                Log.Info("betterRP disabled");
+                Log.Info("BetterRP disabled");
                 base.OnDisabled();
             }
         }
