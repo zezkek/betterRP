@@ -14,10 +14,20 @@ namespace betterRP
     {
         public PlayerNames NameHandler;
         Random rnd = new Random();
-        List<string> ScientistAndSecuritySurname = Plugin.PluginItem.Config.ScientistAndSecuritySurname;
-        List<string> CHINickname = Plugin.PluginItem.Config.CHINames;
-        List<string> NTFNickName = Plugin.PluginItem.Config.MTFNames;
+        List<string> ScientistAndSecuritySurname = new List<string>();
+        List<string> MTFCHINickname = new List<string>();
         string selectedname;
+        public void OnRoundStarted()
+        {
+            ScientistAndSecuritySurname = File.ReadAllLines("Names/ScientistAndSecuritySurname.txt").ToList();
+            ScientistAndSecuritySurname.ShuffleList();
+            MTFCHINickname = File.ReadAllLines("Names/Nickname").ToList();
+            MTFCHINickname.ShuffleList();
+        }
+        public void OnDying(DyingEventArgs ev)
+        {
+            ev.Target.DisplayNickname = ev.Target.Nickname;
+        }
         public void OnChangedRole(ChangedRoleEventArgs ev)
         {
             if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
@@ -113,36 +123,36 @@ namespace betterRP
                             break;
 
                         case RoleType.NtfCadet:
-                            selectedname = NTFNickName[rnd.Next(NTFNickName.Count)];
-                            NTFNickName.Remove(selectedname);
+                            selectedname = MTFCHINickname[rnd.Next(MTFCHINickname.Count)];
+                            MTFCHINickname.Remove(selectedname);
                             ev.Player.DisplayNickname = ("Кадет '" + selectedname + "' " + Plugin.PluginItem.Config.ScientistAndSecuritySurname[rnd.Next(Plugin.PluginItem.Config.ScientistAndSecuritySurname.Count)][0] + ".");
                             ev.Player.ShowHint("\n\nВы член <color=#00BFFF>МОГ Эпсилон-11</color>, Ваша должность <color=#00BFFF>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 
                         case RoleType.NtfLieutenant:
-                            selectedname = NTFNickName[rnd.Next(NTFNickName.Count)];
-                            NTFNickName.Remove(selectedname);
+                            selectedname = MTFCHINickname[rnd.Next(MTFCHINickname.Count)];
+                            MTFCHINickname.Remove(selectedname);
                             ev.Player.DisplayNickname = ("Лейтенант '" + selectedname + "' " + Plugin.PluginItem.Config.ScientistAndSecuritySurname[rnd.Next(Plugin.PluginItem.Config.ScientistAndSecuritySurname.Count)][0] + ".");
                             ev.Player.ShowHint("\n\nВы член <color=#1E90FF>МОГ Эпсилон-11</color>, Ваша должность <color=#1E90FF>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 
                         case RoleType.NtfCommander:
-                            selectedname = NTFNickName[rnd.Next(NTFNickName.Count)];
-                            NTFNickName.Remove(selectedname);
+                            selectedname = MTFCHINickname[rnd.Next(MTFCHINickname.Count)];
+                            MTFCHINickname.Remove(selectedname);
                             ev.Player.DisplayNickname = ("Командир '" + selectedname + "' " + Plugin.PluginItem.Config.ScientistAndSecuritySurname[rnd.Next(Plugin.PluginItem.Config.ScientistAndSecuritySurname.Count)][0] + ".");
                             ev.Player.ShowHint("\n\nВы член <color=#000080>МОГ Эпсилон-11</color>, Ваша должность <color=#000080>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 
                         case RoleType.NtfScientist:
-                            selectedname = NTFNickName[rnd.Next(NTFNickName.Count)];
-                            NTFNickName.Remove(selectedname);
+                            selectedname = MTFCHINickname[rnd.Next(MTFCHINickname.Count)];
+                            MTFCHINickname.Remove(selectedname);
                             ev.Player.DisplayNickname = ("Специалист по ВУС '" + selectedname + "' " + Plugin.PluginItem.Config.ScientistAndSecuritySurname[rnd.Next(Plugin.PluginItem.Config.ScientistAndSecuritySurname.Count)][0] + ".");
                             ev.Player.ShowHint("\n\nВы член <color=#0000CD>МОГ Эпсилон-11</color>, Ваша должность <color=#0000CD>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 
                         case RoleType.ChaosInsurgency:
-                            selectedname = CHINickname[rnd.Next(CHINickname.Count)];
-                            CHINickname.Remove(selectedname);
+                            selectedname = MTFCHINickname[rnd.Next(MTFCHINickname.Count)];
+                            MTFCHINickname.Remove(selectedname);
                             ev.Player.DisplayNickname = ("Агент " + selectedname);
                             ev.Player.ShowHint("\n\nВы агент <color=green>Хаоса</color>, Ваш позывной <color=green>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
@@ -152,10 +162,7 @@ namespace betterRP
                             break;
                     }
                 else
-                    switch (ev.Player.Role)
-                    {
-                        
-                    }
+                    ev.Player.DisplayNickname = "[ДАННЫЕ УДАЛЕНЫ]";
             selectedname = null;
         }
     }

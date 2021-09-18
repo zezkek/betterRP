@@ -18,19 +18,19 @@ namespace RolePlayNames.Handlers
         public PlayerResize ResizeHandler;
         public void OnChangedRoleEventArgs(ChangedRoleEventArgs ev)
         {
-            Vector3 resize = new Vector3(1, 1, 1);
-            if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
+            if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
             {
-                if (ev.Player.IsHuman)
-                {
-                    XScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                    YScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                    resize = new Vector3(XScale, YScale, 1);
-                    ev.Player.Scale = resize;
-                }
-                else
-                    ev.Player.Scale = resize;
+                Vector3 resize = new Vector3(1, 1, 1);
+                XScale = UnityEngine.Random.Range(0.9f, 1.1f);
+                YScale = UnityEngine.Random.Range(0.9f, 1.1f);
+                ev.Player.Scale = new Vector3(XScale, YScale, 1);
             }
+            else
+                ev.Player.Scale = new Vector3(1, 1, 1);
+        }
+        public void OnDying(DyingEventArgs ev)
+        {
+            ev.Target.Scale = new Vector3(1, 1, 1);
         }
     }
 }
