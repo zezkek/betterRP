@@ -119,7 +119,7 @@ namespace betterRP
                                     ev.Player.DisplayNickname = ("Офицер " + selectedname);
                                     break;
                             }
-                            ev.Player.ShowHint("\n\nВы сотрудник <color=gray>СБ комплекса</color>, Ваша должность <color=gray>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
+                            ev.Player.ShowHint("\n\nВы сотрудник <color=#757575>СБ комплекса</color>, Ваша должность <color=#757575>" + ev.Player.DisplayNickname + "</color>", Plugin.PluginItem.Config.HintDisplayTime);
                             break;
 
                         case RoleType.NtfCadet:
