@@ -7,8 +7,8 @@
     <ProjectGuid>{BB2E24C0-C84E-46BA-9EA1-54D6D8D1F254}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>betterRP</RootNamespace>
-    <AssemblyName>betterRP</AssemblyName>
+    <RootNamespace>BetterRP</RootNamespace>
+    <AssemblyName>BetterRP</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -67,15 +67,14 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>..\..\..\ExiledTryharding\Assembly-CSharp-Publicized.dll</HintPath>
+      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
     <Reference Include="CommandSystem.Core">
-      <HintPath>..\..\..\ExiledTryharding\CommandSystem.Core.dll</HintPath>
+      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\CommandSystem.Core.dll</HintPath>
     </Reference>
     <Reference Include="Exiled.API">
       <HintPath>..\..\..\..\AppData\Roaming\EXILED\Plugins\dependencies\Exiled.API.dll</HintPath>
@@ -103,7 +102,7 @@
       <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\Mirror.dll</HintPath>
     </Reference>
     <Reference Include="NorthwoodLib">
-      <HintPath>..\..\..\ExiledTryharding\NorthwoodLib.dll</HintPath>
+      <HintPath>F:\Windows\Servers\SCP.EXILED\SCPSL_Data\Managed\NorthwoodLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -56,8 +56,7 @@
             switch (arguments.At(0))
             {
                 default:
-                    var msg = $"{playerRequester.Nickname}: ";
-                    msg += string.Join(" ", arguments.Segment(0));
+                    var msg = $"{playerRequester.Nickname}: " + string.Join(" ", arguments.Segment(0));
                     msg = Regex.Replace(msg, "<[^>]*>", string.Empty);
                     foreach (Player player in Player.List.Where(p => (p.Role != RoleType.Spectator || p.Role != RoleType.None)
                     && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно сюда обьект класса Plugin*/))

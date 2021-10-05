@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "betterRP", "betterRP\betterRP.csproj", "{BB2E24C0-C84E-46BA-9EA1-54D6D8D1F254}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterRP", "BetterRP\BetterRP.csproj", "{BB2E24C0-C84E-46BA-9EA1-54D6D8D1F254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
