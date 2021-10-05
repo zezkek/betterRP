@@ -134,6 +134,7 @@
     <Compile Include="Commands\CommandMethods.cs" />
     <Compile Include="Commands\Do\Do.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Handlers\GrenadesAdditionalEffects.cs" />
     <Compile Include="Handlers\PlayerNames.cs" />
     <Compile Include="Handlers\PlayerResize.cs" />
@@ -145,6 +146,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

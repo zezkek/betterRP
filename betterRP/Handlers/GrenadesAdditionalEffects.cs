@@ -1,23 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Exiled.API.Extensions;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs;
-using CustomPlayerEffects;
-using UnityEngine;
-using Mirror;
-using betterRP;
-
-namespace betterRP
+﻿namespace BetterRP
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using BetterRP;
+    using CustomPlayerEffects;
+    using Exiled.API.Enums;
+    using Exiled.API.Extensions;
+    using Exiled.API.Features;
+    using Exiled.Events.EventArgs;
+    using Mirror;
+    using UnityEngine;
+
     public class GrenadesAdditionalEffects
     {
-        public GrenadesAdditionalEffects GrenadeHandler;
         private readonly Plugin plugin;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrenadesAdditionalEffects"/> class.
+        /// </summary>
+        /// <param name="plugin">Used to take config params.</param>
         public GrenadesAdditionalEffects(Plugin plugin)
         {
             this.plugin = plugin;
@@ -25,19 +29,28 @@ namespace betterRP
 
         public void OnFlash(ExplodingGrenadeEventArgs ev)
         {
-            if (ev.IsFrag) return;
-            if (plugin.Config.Debug)
+            if (ev.IsFrag)
+            {
+                return;
+            }
+
+            if (this.plugin.Config.Debug)
             {
                 Log.Debug("Event OnFlash has been taken");
+#pragma warning disable CS0618 // Type or member is obsolete
                 Log.Debug($"Count of targets: {ev.Targets.Count}");
+#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             foreach (Player player in Player.List)
             {
-                if (plugin.Config.Debug)
+                if (this.plugin.Config.Debug)
+                {
                     Log.Debug($"Distance Difference between grenade {ev.Grenade.transform.position}" +
                         $" and possible target {player.Nickname}:" +
                         $" {Vector3.Distance(ev.Grenade.transform.position, player.Position)}");
+                }
+
                 if (Vector3.Distance(ev.Grenade.transform.position, player.Position) <= 10)
                 {
                     switch (player.Role)
@@ -58,14 +71,20 @@ namespace betterRP
                             break;
                         case RoleType.Scp93953:
                         case RoleType.Scp93989:
-                            if (plugin.Config.Debug)
+                            if (this.plugin.Config.Debug)
+                            {
                                 Log.Debug("Giving flash effects for 939. Distance less than 15");
+                            }
+
                             player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Ensnared, duration: 6);
                             break;
                         default:
-                            if (plugin.Config.Debug)
+                            if (this.plugin.Config.Debug)
+                            {
                                 Log.Debug("Giving flash effects for others. Distance less than 15");
+                            }
+
                             player.EnableEffect(EffectType.Flashed, duration: 6);
                             player.EnableEffect(EffectType.Blinded, duration: 12);
                             player.EnableEffect(EffectType.Deafened, duration: 12);
@@ -93,29 +112,45 @@ namespace betterRP
                             break;
                         case RoleType.Scp93953:
                         case RoleType.Scp93989:
-                            if (plugin.Config.Debug)
+                            if (this.plugin.Config.Debug)
+                            {
                                 Log.Debug("Giving flash effects for 939. Distance less than 25");
+                            }
+
                             player.EnableEffect(EffectType.Flashed, duration: 3);
                             player.EnableEffect(EffectType.Ensnared, duration: 3);
                             break;
                         default:
-                            if (plugin.Config.Debug)
+                            if (this.plugin.Config.Debug)
+                            {
                                 Log.Debug("Giving flash effects for others. Distance less than 25");
+                            }
+
                             player.EnableEffect(EffectType.Deafened, duration: 6);
                             player.EnableEffect(EffectType.Concussed, duration: 15);
                             break;
                     }
-                }    
+                }
             }
         }
 
         public void OnDamage(HurtingEventArgs ev)
         {
-            if (plugin.Config.Debug)
+            if (this.plugin.Config.Debug)
+            {
                 Log.Debug("Event OnDamage has been taken");
-            if (ev.DamageType != DamageTypes.Grenade) return;
-            if (plugin.Config.Debug)
+            }
+
+            if (ev.DamageType != DamageTypes.Grenade)
+            {
+                return;
+            }
+
+            if (this.plugin.Config.Debug)
+            {
                 Log.Debug("First check passed");
+            }
+
             switch (ev.Target.Role)
             {
                 case RoleType.None:
@@ -134,14 +169,20 @@ namespace betterRP
                     break;
                 case RoleType.Scp93953:
                 case RoleType.Scp93989:
-                    if (plugin.Config.Debug)
+                    if (this.plugin.Config.Debug)
+                    {
                         Log.Debug("Giving frag effects for 939");
+                    }
+
                     ev.Target.EnableEffect(EffectType.Blinded, duration: 6);
                     ev.Target.EnableEffect(EffectType.Ensnared, duration: 6);
                     break;
                 default:
-                    if (plugin.Config.Debug)
+                    if (this.plugin.Config.Debug)
+                    {
                         Log.Debug("Giving frag effects for others");
+                    }
+
                     ev.Target.EnableEffect(EffectType.Deafened, duration: 12);
                     ev.Target.EnableEffect(EffectType.Concussed, duration: 30);
                     break;

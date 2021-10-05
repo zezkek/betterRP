@@ -1,33 +1,36 @@
-﻿using Exiled.API.Features;
-using Exiled.Events.EventArgs;
-using Exiled.API.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mirror;
-using UnityEngine;
-using betterRP;
-
-namespace RolePlayNames.Handlers
+﻿namespace RolePlayNames.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using BetterRP;
+    using Exiled.API.Enums;
+    using Exiled.API.Features;
+    using Exiled.Events.EventArgs;
+    using Mirror;
+    using UnityEngine;
+
     public class PlayerResize
     {
-        float XScale, YScale;
-        public PlayerResize ResizeHandler;
+        private float xScale;
+        private float yScale;
+
         public void OnChangedRoleEventArgs(ChangedRoleEventArgs ev)
         {
             if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
             {
-                Vector3 resize = new Vector3(1, 1, 1);
-                XScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                YScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                ev.Player.Scale = new Vector3(XScale, YScale, 1);
+                this.xScale = UnityEngine.Random.Range(0.9f, 1.1f);
+                this.yScale = UnityEngine.Random.Range(0.9f, 1.1f);
+                ev.Player.Scale = new Vector3(this.xScale, this.yScale, 1);
             }
             else
+            {
                 ev.Player.Scale = new Vector3(1, 1, 1);
+            }
         }
+
         public void OnDying(DyingEventArgs ev)
         {
             ev.Target.Scale = new Vector3(1, 1, 1);
