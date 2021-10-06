@@ -36,9 +36,7 @@
 
         public static List<string> CallSignsBase = new List<string> { };
 
-#pragma warning disable SA1201 // Elements should appear in the correct order
         public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
-#pragma warning restore SA1201 // Elements should appear in the correct order
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
         private PlayerNames playerNames;
@@ -77,6 +75,7 @@
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnDamage;
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
+            SvEv.RoundStarted += this.playerNames.OnStart;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnFlash;
 
             this.LoadNames();
@@ -100,6 +99,7 @@
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnDamage;
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
+            SvEv.RoundStarted -= this.playerNames.OnStart;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnFlash;
 

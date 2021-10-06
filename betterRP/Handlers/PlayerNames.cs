@@ -19,15 +19,12 @@
 
         private List<string> surnames = new List<string>();
         private List<string> callSigns = new List<string>();
-        private bool isSurnames = false;
-        private bool isCallSigns = false;
 
         public void OnWaiting()
         {
             Log.Debug($"Total surnames count out of handler: {Plugin.SurnameBase.Count()}", Plugin.PluginItem.Config.Debug);
             if (Plugin.SurnameBase.Count > 0)
             {
-                this.isSurnames = true;
                 this.surnames = Plugin.SurnameBase;
                 this.surnames.ShuffleList();
                 Log.Debug($"Total surnames count inside handler: {this.surnames.Count()}", Plugin.PluginItem.Config.Debug);
@@ -36,10 +33,139 @@
             Log.Debug($"Total callsigns count out of handler: {Plugin.CallSignsBase.Count()}", Plugin.PluginItem.Config.Debug);
             if (Plugin.CallSignsBase.Count > 0)
             {
-                this.isCallSigns = true;
                 this.callSigns = Plugin.CallSignsBase;
                 this.callSigns.ShuffleList();
                 Log.Debug($"Total callsigns count inside handler: {this.callSigns.Count()}", Plugin.PluginItem.Config.Debug);
+            }
+        }
+
+        public void OnStart()
+        {
+            Plugin.PluginItem.NewCoroutine(this.BadgeDisplay());
+        }
+
+        public IEnumerator<float> BadgeDisplay()
+        {
+            yield return MEC.Timing.WaitForSeconds(Plugin.PluginItem.Config.HintDisplayTime);
+            while (Round.IsStarted)
+            {
+                string name = "<align=left><pos=-21%><b><size=20><color=#C1B5B5>ПОЛЬЗОВАТЕЛЬ</pos><pos=-7%> :  </color>" +
+                        "<color=%color>%name</color></pos>\n";
+                string post = "<pos=-21%><b><size=20>" +
+                        "<color=#C1B5B5>ДОЛЖНОСТЬ</pos>" +
+                        "<pos=-7%> :  </color><color=%color>%post</color>" +
+                        "</size></pos>\n";
+                string role = "<pos=-21%><b><size=20>" +
+                        "<color=#C1B5B5>РОЛЬ" +
+                        "<pos=-7%> :  </color><color=%color>%role</color></size></pos>\n";
+                foreach (var player in Player.List.Where(x => x != null && x.Role != RoleType.None))
+                {
+                    int lines = 11;
+                    string display = string.Empty;
+                    if (player.IsGodModeEnabled)
+                    {
+                        display += "<align=left><pos=-21%><b><size=20><color=#C1B5B5>РЕЖИМ БОГА</color> <color=#6aa84f>ВКЛЮЧЁН</color></b></pos></align>\n";
+                        lines--;
+                    }
+
+                    if (player.NoClipEnabled)
+                    {
+                        display += "<align=left><pos=-21%><b><size=20><color=#C1B5B5>РЕЖИМ ПОЛЁТА</color> <color=#6aa84f>ДОСТУПЕН</color></b></pos></align>\n";
+                        lines--;
+                    }
+
+                    if (player.IsBypassModeEnabled)
+                    {
+                        display += "<align=left><pos=-21%><b><size=20><color=#C1B5B5>РЕЖИМ ОБХОДА</color> <color=#6aa84f>ВКЛЮЧЁН</color></b></pos></align>\n";
+                        lines--;
+                    }
+
+                    if (lines != 11)
+                    {
+                        display += "\n";
+                    }
+
+                    for (int i = 0; i < lines; i++)
+                    {
+                        display = "\n" + display;
+                    }
+
+                    display += name.Replace("%name", player.Nickname);
+                    switch (player.Team)
+                    {
+                        case Team.SCP:
+                            display += role.Replace("%role", player.DisplayNickname);
+                            if (player.Role == RoleType.Scp0492 && player.CustomInfo != string.Empty && player.CustomInfo != null)
+                            {
+                                display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
+                                display = display.Replace("%color", "#FFD966");
+                            }
+
+                            break;
+                        case Team.MTF:
+                            if (player.Role != RoleType.FacilityGuard)
+                            {
+                                display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ПОЗЫВНОЙ");
+                            }
+                            else
+                            {
+                                display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ФИО");
+                            }
+
+                            switch (player.Role)
+                            {
+                                case RoleType.NtfLieutenant:
+                                    display += post.Replace("%post", $"Лейтенант {player.UnitName}");
+                                    display = display.Replace("%color", "#1E90FF");
+                                    break;
+                                case RoleType.NtfCommander:
+                                    display += post.Replace("%post", $"Командир {player.UnitName}");
+                                    display = display.Replace("%color", "#000080");
+                                    break;
+                                case RoleType.NtfCadet:
+                                    display += post.Replace("%post", $"Кадет {player.UnitName}");
+                                    display = display.Replace("%color", "#00BFFF");
+                                    break;
+                                case RoleType.NtfScientist:
+                                    display += post.Replace("<color=%color>%post</color>", $"{player.CustomInfo} <color=%color>{player.UnitName}</color>");
+                                    display = display.Replace("%color", "#0000CD");
+                                    break;
+                                case RoleType.FacilityGuard:
+                                    display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
+                                    display = display.Replace("%color", "#757575");
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            break;
+                        case Team.CHI:
+                            display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ПОЗЫВНОЙ");
+                            display += post.Replace("%post", "Агент Хаоса");
+                            display = display.Replace("%color", "#6aa84f");
+                            break;
+                        case Team.RSC:
+                            display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ФИО");
+                            display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
+                            display = display.Replace("%color", "#FFD966");
+                            break;
+                        case Team.CDP:
+                            display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "НОМЕР");
+                            display += post.Replace("%post", "Класс-D");
+                            display = display.Replace("%color", "#CE7E00");
+                            break;
+                        case Team.TUT:
+                            display += post.Replace("%post", "Обучение");
+                            display = display.Replace("%color", "#6aa84f");
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    player.ShowHint(display + "</pos></size></b></align>", 10.5f);
+                }
+
+                yield return MEC.Timing.WaitForSeconds(10f);
             }
         }
 
@@ -49,7 +175,6 @@
             {
                 Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(ev.Target));
             }
-
         }
 
         public IEnumerator<float> NameChangeDelay(Player player)
@@ -89,7 +214,7 @@
                             message = message.Replace("%color", "#CE7E00").Replace("Ваша должность", "Ваш номер").Replace("%post", "класса-D").Replace("%subclass", ev.Player.DisplayNickname);
                             break;
                         case RoleType.Scientist:
-                            if (this.isSurnames)
+                            if (this.surnames.Count > 0)
                             {
                                 selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
                                 this.surnames.Remove(selectedname);
@@ -124,7 +249,7 @@
                             break;
 
                         case RoleType.FacilityGuard:
-                            if (this.isSurnames)
+                            if (this.surnames.Count > 0)
                             {
                                 selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
                                 this.surnames.Remove(selectedname);
@@ -158,7 +283,7 @@
                             break;
 
                         case RoleType.ChaosInsurgency:
-                            if (this.isCallSigns)
+                            if (this.callSigns.Count > 0)
                             {
                                 selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
                                 this.callSigns.Remove(selectedname);
@@ -177,7 +302,7 @@
                             if (ev.Player.Team == Team.MTF)
                             {
                                 message = message.Replace("сотрудник</color> ", "член</color> <color=%color>МОГ Эпсилон-11</color>").Replace("<color=%color>%post</color>", string.Empty).Replace("Ваша должность", "Ваш позывной");
-                                if (this.isCallSigns)
+                                if (this.callSigns.Count > 0)
                                 {
                                     selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
                                     this.callSigns.Remove(selectedname);
