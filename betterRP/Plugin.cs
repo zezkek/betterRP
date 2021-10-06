@@ -32,9 +32,9 @@
 
         public void NewCoroutine(IEnumerator<float> coroutine, MEC.Segment segment = MEC.Segment.Update) => this.coroutines.Add(MEC.Timing.RunCoroutine(coroutine, segment));
 
-        public List<string> SurnameBase = new List<string> { };
+        public static List<string> SurnameBase = new List<string> { };
 
-        public List<string> CallSignsBase = new List<string> { };
+        public static List<string> CallSignsBase = new List<string> { };
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
         public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
@@ -57,7 +57,7 @@
         {
             if (!this.Config.IsEnabled)
             {
-                Log.Info("Better RP is disabled via configs. It will not be loaded.");
+                Log.Debug("Better RP is disabled via configs. It will not be loaded.");
                 return;
             }
 
@@ -107,13 +107,13 @@
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
-            this.SurnameBase = new List<string> { };
-            this.CallSignsBase = new List<string> { };
+            SurnameBase = new List<string> { };
+            CallSignsBase = new List<string> { };
             base.OnDisabled();
 
             if (this.Config.IsEnabled)
             {
-                Log.Info("BetterRP disabled");
+                Log.Debug("BetterRP disabled");
                 base.OnDisabled();
             }
         }
@@ -122,32 +122,40 @@
         {
             try
             {
-                if (!Directory.Exists(Path.Combine(PluginItem.Config.ItemConfigFolder, "Names")))
+                if (!Directory.Exists(Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/")))
                 {
+                    Log.Warn("Folder with names files not found. Creating...");
                     Directory.CreateDirectory(PluginItem.Config.ItemConfigFolder);
                 }
 
+                Log.Info("Creating path for names folder...");
                 string surnameFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/Surnames.txt");
                 string callSignsFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/CallSigns.txt");
 
-                Log.Info($"{surnameFilePath}");
+                Log.Debug($"{surnameFilePath}");
                 if (!File.Exists(surnameFilePath))
                 {
+                    Log.Warn("File with surnames not found. Creating...");
                     File.WriteAllText(surnameFilePath, string.Empty);
                 }
                 else
                 {
-                    this.SurnameBase = File.ReadAllLines(surnameFilePath).ToList();
+                    Log.Info("File with surnames has been found. Reading...");
+                    SurnameBase = File.ReadAllLines(surnameFilePath).ToList();
+                    Log.Info($"Total surnames count: {SurnameBase.Count()}");
                 }
 
-                Log.Info($"{callSignsFilePath}");
+                Log.Debug($"{callSignsFilePath}");
                 if (!File.Exists(callSignsFilePath))
                 {
+                    Log.Warn("File with callsigns found. Creating...");
                     File.WriteAllText(callSignsFilePath, string.Empty);
                 }
                 else
                 {
-                    this.CallSignsBase = File.ReadAllLines(callSignsFilePath).ToList();
+                    Log.Info("File with callsigns has been found. Reading...");
+                    CallSignsBase = File.ReadAllLines(callSignsFilePath).ToList();
+                    Log.Info($"Total callsigns count: {CallSignsBase.Count()}");
                 }
             }
             catch (Exception e)

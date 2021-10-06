@@ -24,9 +24,9 @@
             if (ev.Player.IsScp && Player.List.Where(p => p.IsDead).Count() > 0)
             {
                 var scp = ev.Player.Role;
-                Log.Info(scp.ToString());
+                Log.Debug(scp.ToString(), Plugin.PluginItem.Config.Debug);
                 var position = ev.Player.Position;
-                Log.Info(position.y);
+                Log.Debug(position.y, Plugin.PluginItem.Config.Debug);
                 List<Player> players = Player.List.Where(x => x.IsDead).ToList();
                 int randomplayer = this.rnd.Next(players.Count);
                 players[randomplayer].Role = scp;
