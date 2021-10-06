@@ -32,6 +32,10 @@
 
         public void NewCoroutine(IEnumerator<float> coroutine, MEC.Segment segment = MEC.Segment.Update) => this.coroutines.Add(MEC.Timing.RunCoroutine(coroutine, segment));
 
+        public List<string> SurnameBase = new List<string> { };
+
+        public List<string> CallSignsBase = new List<string> { };
+
 #pragma warning disable SA1201 // Elements should appear in the correct order
         public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
 #pragma warning restore SA1201 // Elements should appear in the correct order
@@ -71,11 +75,11 @@
             PlayerEv.Dying += this.playerResize.OnDying;
             PlayerEv.Left += this.replaceSCP.OnDisconnect;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnDamage;
-            SvEv.RoundStarted += this.playerNames.OnRoundStarted;
+            SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnFlash;
 
-            this.NamesFileCheck();
+            this.LoadNames();
 
             base.OnEnabled();
         }
@@ -96,13 +100,15 @@
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnDamage;
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
-            SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
+            SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnFlash;
 
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
+            this.SurnameBase = new List<string> { };
+            this.CallSignsBase = new List<string> { };
             base.OnDisabled();
 
             if (this.Config.IsEnabled)
@@ -112,26 +118,42 @@
             }
         }
 
-        private void NamesFileCheck()
+        private void LoadNames()
         {
-            if (!Directory.Exists(PluginItem.Config.ItemConfigFolder))
+            try
             {
-                Directory.CreateDirectory(PluginItem.Config.ItemConfigFolder);
+                if (!Directory.Exists(Path.Combine(PluginItem.Config.ItemConfigFolder, "Names")))
+                {
+                    Directory.CreateDirectory(PluginItem.Config.ItemConfigFolder);
+                }
+
+                string surnameFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/Surnames.txt");
+                string callSignsFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/CallSigns.txt");
+
+                Log.Info($"{surnameFilePath}");
+                if (!File.Exists(surnameFilePath))
+                {
+                    File.WriteAllText(surnameFilePath, string.Empty);
+                }
+                else
+                {
+                    this.SurnameBase = File.ReadAllLines(surnameFilePath).ToList();
+                }
+
+                Log.Info($"{callSignsFilePath}");
+                if (!File.Exists(callSignsFilePath))
+                {
+                    File.WriteAllText(callSignsFilePath, string.Empty);
+                }
+                else
+                {
+                    this.CallSignsBase = File.ReadAllLines(callSignsFilePath).ToList();
+                }
             }
-
-            string sSfilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/ScientistAndSecuritySurname.txt");
-            string nickfilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/CallSigns.txt");
-
-            Log.Info($"{sSfilePath}");
-            if (!File.Exists(sSfilePath))
+            catch (Exception e)
             {
-                File.WriteAllText(sSfilePath, string.Empty);
-            }
-
-            Log.Info($"{nickfilePath}");
-            if (!File.Exists(nickfilePath))
-            {
-                File.WriteAllText(nickfilePath, string.Empty);
+                Log.Error($"An error occured while parsing names:\n{e}");
+                throw;
             }
         }
     }

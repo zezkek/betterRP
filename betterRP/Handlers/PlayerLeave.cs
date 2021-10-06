@@ -20,6 +20,7 @@
 
         public void OnDisconnect(LeftEventArgs ev)
         {
+            // Проверить и, в случае ошибки, добавить замену для SCP-079
             if (ev.Player.IsScp && Player.List.Where(p => p.IsDead).Count() > 0)
             {
                 var scp = ev.Player.Role;
