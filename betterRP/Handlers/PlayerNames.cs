@@ -191,7 +191,7 @@
 
         public void OnChangingRole(ChangingRoleEventArgs ev)
         {
-            if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
+            if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.NewRole != RoleType.None)
             {
                 string selectedname;
 
@@ -207,7 +207,7 @@
                         "<color=%color>%subclass</color>" +
                         "</size></b>";
 
-                    switch (ev.Player.Role)
+                    switch (ev.NewRole)
                     {
                         case RoleType.ClassD:
                             ev.Player.DisplayNickname = "D-" + this.rnd.Next(10000, 99999).ToString();
@@ -300,15 +300,15 @@
                                     selectedname = ev.Player.Nickname;
                                 }
 
-                                if (ev.Player.Role == RoleType.ChaosMarauder)
+                                if (ev.NewRole == RoleType.ChaosMarauder)
                                 {
                                     message = message.Replace("%color", "#274e13");
                                 }
-                                else if (ev.Player.Role == RoleType.ChaosRepressor)
+                                else if (ev.NewRole == RoleType.ChaosRepressor)
                                 {
                                     message = message.Replace("%color", "#38761d");
                                 }
-                                else if (ev.Player.Role == RoleType.ChaosRifleman)
+                                else if (ev.NewRole == RoleType.ChaosRifleman)
                                 {
                                     message = message.Replace("%color", "#38761d");
                                 }
@@ -334,16 +334,16 @@
                                     selectedname = ev.Player.Nickname;
                                 }
 
-                                if (ev.Player.Role == RoleType.NtfCaptain)
+                                if (ev.NewRole == RoleType.NtfCaptain)
                                 {
                                     message = message.Replace("%color", "#000080");
                                 }
-                                else if (ev.Player.Role == RoleType.NtfSpecialist)
+                                else if (ev.NewRole == RoleType.NtfSpecialist)
                                 {
                                     ev.Player.CustomInfo = "<color=#0000CD>Специалист по ВУС</color>";
                                     message = message.Replace("%color", "#0000CD");
                                 }
-                                else if (ev.Player.Role == RoleType.NtfSergeant)
+                                else if (ev.NewRole == RoleType.NtfSergeant)
                                 {
                                     message = message.Replace("%color", "#1E90FF");
                                 }
@@ -369,7 +369,7 @@
                 }
                 else
                 {
-                    if (ev.Player.Role != RoleType.Scp0492)
+                    if (ev.NewRole != RoleType.Scp0492)
                     {
                         ev.Player.CustomInfo = string.Empty;
                         ev.Player.DisplayNickname = "[ДАННЫЕ УДАЛЕНЫ]";

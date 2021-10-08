@@ -19,7 +19,7 @@
 
         public void OnChangingRoleEventArgs(ChangingRoleEventArgs ev)
         {
-            if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
+            if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.NewRole != RoleType.None)
             {
                 this.xScale = UnityEngine.Random.Range(0.9f, 1.1f);
                 this.yScale = UnityEngine.Random.Range(0.9f, 1.1f);
