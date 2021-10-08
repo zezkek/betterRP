@@ -27,24 +27,6 @@
 
         public float BlackoutDelay { get; set; } = 15f;
 
-        [Description("New Science Names")]
-        public List<string> ScientistAndSecuritySurname { get; set; } = new List<string>
-        {
-            "Адамс", "Элисон",
-            "Андерсон", "Бейкер",
-            "Барретт", "Белл",
-            "Беннетт", "Блэк",
-            "Брукс", "Картер",
-            "Кларк", "Коул",
-            "Купер", "Дэвис",
-            "Эдвардс", "Эллис",
-            "Эванс", "Фишер",
-            "Фостер", "Гибсон",
-            "Харрис", "Харт",
-            "Говард", "Льюис",
-            "Линн", "Митчел",
-            "Петерс", "Рэй",
-            "Робертс",
-        };
+        public float JumpStaminaCost { get; set; } = 0.5f;
     }
 }

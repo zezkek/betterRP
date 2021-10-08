@@ -32,7 +32,7 @@
         public IEnumerator<float> BlackoutDealy()
         {
             yield return MEC.Timing.WaitForSeconds(this.plugin.Config.BlackoutDelay);
-            Map.TurnOffAllLights(5, isHeavyContainmentZoneOnly: false);
+            Map.TurnOffAllLights(5);
             yield break;
         }
     }

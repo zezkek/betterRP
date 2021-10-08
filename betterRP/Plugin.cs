@@ -67,15 +67,15 @@
             this.replaceSCP = new PlayerLeave();
             this.startsBlackout = new StartsBlackout(this);
 
-            PlayerEv.ChangedRole += this.playerNames.OnChangedRole;
+            PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
             PlayerEv.Dying += this.playerNames.OnDying;
-            PlayerEv.ChangedRole += this.playerResize.OnChangedRoleEventArgs;
+            PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
             PlayerEv.Left += this.replaceSCP.OnDisconnect;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnDamage;
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
-            SvEv.RoundStarted += this.playerNames.OnStart;
+            SvEv.RoundStarted += this.playerNames.OnRoundStarted;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnFlash;
 
             this.LoadNames();
@@ -92,14 +92,14 @@
                 MEC.Timing.KillCoroutines(this.coroutines.ToArray());
             }
 
-            PlayerEv.ChangedRole -= this.playerNames.OnChangedRole;
+            PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
             PlayerEv.Dying -= this.playerNames.OnDying;
-            PlayerEv.ChangedRole -= this.playerResize.OnChangedRoleEventArgs;
+            PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnDamage;
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
-            SvEv.RoundStarted -= this.playerNames.OnStart;
+            SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnFlash;
 

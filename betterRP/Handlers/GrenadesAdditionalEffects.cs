@@ -38,7 +38,7 @@
             {
                 Log.Debug("Event OnFlash has been taken");
 #pragma warning disable CS0618 // Type or member is obsolete
-                Log.Debug($"Count of targets: {ev.Targets.Count}");
+                Log.Debug($"Count of targets: {ev.TargetsToAffect.Count}");
 #pragma warning restore CS0618 // Type or member is obsolete
             }
 

@@ -17,7 +17,7 @@
         private float xScale;
         private float yScale;
 
-        public void OnChangedRoleEventArgs(ChangedRoleEventArgs ev)
+        public void OnChangingRoleEventArgs(ChangingRoleEventArgs ev)
         {
             if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.Player.Role != RoleType.None)
             {
