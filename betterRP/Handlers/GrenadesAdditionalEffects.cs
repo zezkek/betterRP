@@ -76,7 +76,11 @@
                                 Log.Debug("Giving flash effects for 939. Distance less than 15");
                             }
 
-                            player.EnableEffect(EffectType.Flashed, duration: 6);
+                            if (!ev.IsFrag)
+                            {
+                                player.EnableEffect(EffectType.Flashed, duration: 6);
+                            }
+
                             player.EnableEffect(EffectType.Ensnared, duration: 6);
                             break;
                         default:
@@ -85,8 +89,11 @@
                                 Log.Debug("Giving flash effects for others. Distance less than 15");
                             }
 
-                            player.EnableEffect(EffectType.Flashed, duration: 6);
-                            player.EnableEffect(EffectType.Blinded, duration: 12);
+                            if (!ev.IsFrag)
+                            {
+                                player.EnableEffect(EffectType.Flashed, duration: 6);
+                            }
+
                             player.EnableEffect(EffectType.Deafened, duration: 12);
                             player.EnableEffect(EffectType.Concussed, duration: 30);
                             break;
@@ -117,7 +124,11 @@
                                 Log.Debug("Giving flash effects for 939. Distance less than 25");
                             }
 
-                            player.EnableEffect(EffectType.Flashed, duration: 3);
+                            if (!ev.IsFrag)
+                            {
+                                player.EnableEffect(EffectType.Flashed, duration: 3);
+                            }
+
                             player.EnableEffect(EffectType.Ensnared, duration: 3);
                             break;
                         default:
@@ -131,61 +142,6 @@
                             break;
                     }
                 }
-            }
-        }
-
-        public void OnDamage(HurtingEventArgs ev)
-        {
-            if (this.plugin.Config.Debug)
-            {
-                Log.Debug("Event OnDamage has been taken");
-            }
-
-            if (ev.DamageType != DamageTypes.Grenade)
-            {
-                return;
-            }
-
-            if (this.plugin.Config.Debug)
-            {
-                Log.Debug("First check passed");
-            }
-
-            switch (ev.Target.Role)
-            {
-                case RoleType.None:
-                    break;
-                case RoleType.Scp173:
-                    break;
-                case RoleType.Spectator:
-                    break;
-                case RoleType.Scp106:
-                    break;
-                case RoleType.Scp079:
-                    break;
-                case RoleType.Scp096:
-                    break;
-                case RoleType.Tutorial:
-                    break;
-                case RoleType.Scp93953:
-                case RoleType.Scp93989:
-                    if (this.plugin.Config.Debug)
-                    {
-                        Log.Debug("Giving frag effects for 939");
-                    }
-
-                    ev.Target.EnableEffect(EffectType.Blinded, duration: 6);
-                    ev.Target.EnableEffect(EffectType.Ensnared, duration: 6);
-                    break;
-                default:
-                    if (this.plugin.Config.Debug)
-                    {
-                        Log.Debug("Giving frag effects for others");
-                    }
-
-                    ev.Target.EnableEffect(EffectType.Deafened, duration: 12);
-                    ev.Target.EnableEffect(EffectType.Concussed, duration: 30);
-                    break;
             }
         }
     }

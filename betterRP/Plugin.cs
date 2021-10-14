@@ -8,7 +8,9 @@
     using System.Threading.Tasks;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
+#if Full
     using RolePlayNames.Handlers;
+#endif
     using UnityEngine;
     using MapEv = Exiled.Events.Handlers.Map;
     using PlayerEv = Exiled.Events.Handlers.Player;
@@ -22,7 +24,7 @@
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(0, 3, 7);
+        public override Version Version => new Version(0, 3, 8);
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
@@ -32,6 +34,7 @@
 
         public void NewCoroutine(IEnumerator<float> coroutine, MEC.Segment segment = MEC.Segment.Update) => this.coroutines.Add(MEC.Timing.RunCoroutine(coroutine, segment));
 
+#if Full
         public static List<string> SurnameBase = new List<string> { };
 
         public static List<string> CallSignsBase = new List<string> { };
@@ -43,13 +46,13 @@
 #pragma warning restore SA1201 // Elements should appear in the correct order
 
         private PlayerResize playerResize;
-
+#endif
         private GrenadesAdditionalEffects grenadesAdditionalEffects;
-
+#if Full
         private StartsBlackout startsBlackout;
 
         private PlayerLeave replaceSCP;
-
+#endif
         /// <inheritdoc/>
         public override void OnEnabled()
         {
@@ -58,12 +61,13 @@
                 Log.Debug("Better RP is disabled via configs. It will not be loaded.");
                 return;
             }
-
+#if Full
             // commandMethods = new CommandMethods(this);
             this.playerNames = new PlayerNames();
             this.playerResize = new PlayerResize();
+#endif
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
-
+#if Full
             this.replaceSCP = new PlayerLeave();
             this.startsBlackout = new StartsBlackout(this);
 
@@ -72,14 +76,14 @@
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
             PlayerEv.Left += this.replaceSCP.OnDisconnect;
-            PlayerEv.Hurting += this.grenadesAdditionalEffects.OnDamage;
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted += this.playerNames.OnRoundStarted;
+#endif
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnFlash;
-
+#if Full
             this.LoadNames();
-
+#endif
             base.OnEnabled();
         }
 
@@ -91,24 +95,25 @@
             {
                 MEC.Timing.KillCoroutines(this.coroutines.ToArray());
             }
-
+#if Full
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
             PlayerEv.Dying -= this.playerNames.OnDying;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
-            PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnDamage;
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
+#endif
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnFlash;
-
+#if Full
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
+#endif
             base.OnDisabled();
 
             if (this.Config.IsEnabled)
@@ -117,7 +122,7 @@
                 base.OnDisabled();
             }
         }
-
+#if Full
         private void LoadNames()
         {
             try
@@ -164,5 +169,6 @@
                 throw;
             }
         }
+#endif
     }
 }

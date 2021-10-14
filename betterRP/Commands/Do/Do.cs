@@ -43,13 +43,19 @@
             CommandMethods.LogCommandUsed((CommandSender)sender, CommandMethods.FormatArguments(arguments, 0));
             if (!((CommandSender)sender).CheckPermission("betterRP.do"))
             {
-                response = "Ошибка. В доступе отказано";
+                response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ВЫВОД: В ДОСТУПЕ ОТКАЗАНО</color>";
+                return false;
+            }
+
+            if (!playerRequester.IsAlive)
+            {
+                response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ВЫВОД: ДОСТУП ОГРАНИЧЕН ДЛЯ НАБЛЮДАТЕЛЕЙ</color>";
                 return false;
             }
 
             if (arguments.Count < 1)
             {
-                response = "Использование команды: do ВАШЕ СООБЩЕНИЕ";
+                response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ИСПОЛЬЗОВАНИЕ КОМАНДЫ:</color><color=#990000>do ВАШЕ СООБЩЕНИЕ</color>";
                 return false;
             }
 
@@ -57,16 +63,22 @@
             {
                 default:
                     var msg = $"{playerRequester.Nickname}: " + string.Join(" ", arguments.Segment(0));
-                    msg = Regex.Replace(msg, "<[^>]*>", string.Empty);
-                    foreach (Player player in Player.List.Where(p => (p.Role != RoleType.Spectator || p.Role != RoleType.None)
-                    && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно сюда обьект класса Plugin*/))
+                    msg = "Действие игрока " + Regex.Replace(msg, "<[^>]*>", string.Empty);
+
+                    if (msg.Length - 14 > 100)
                     {
-                        player.Broadcast(15, msg);
+                        response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ИСПОЛЬЗОВАНИЕ КОМАНДЫ: ПРЕВЫШЕНО КОЛИЧЕСТВО СИМВОЛОВ (100)</color>";
+                        return false;
                     }
 
                     Log.Info(msg);
+                    foreach (Player player in Player.List.Where(p => (p.Role != RoleType.Spectator || p.Role != RoleType.None)
+                    && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно обьект класса Plugin*/))
+                    {
+                        player.Broadcast(7, "<size=25><color=#C1B5B5>" + msg + "</color></size>");
+                    }
 
-                    response = "Сообщение отправлено";
+                    response = "\n<color=#C1B5B5>СТАТУС: </color><color=#6aa84f>УСПЕШНО</color>\n<color=#C1B5B5>ИСПОЛЬЗОВАНИЕ КОМАНДЫ: СООБЩЕНИЕ ОТПРАВЛЕНО</color>";
                     return true;
             }
         }
