@@ -63,7 +63,7 @@
             {
                 default:
                     var msg = $"{playerRequester.Nickname}: " + string.Join(" ", arguments.Segment(0));
-                    msg = "Действие игрока " + Regex.Replace(msg, "<[^>]*>", string.Empty);
+                    msg = "Действие " + Regex.Replace(msg, "<[^>]*>", string.Empty);
 
                     if (msg.Length - 14 > 100)
                     {
