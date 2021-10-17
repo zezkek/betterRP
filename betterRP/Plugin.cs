@@ -80,7 +80,8 @@
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted += this.playerNames.OnRoundStarted;
 #endif
-            MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnFlash;
+            MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnExplodingGrenade;
+            PlayerEv.Hurting += this.grenadesAdditionalEffects.OnHurting;
 #if Full
             this.LoadNames();
 #endif
@@ -105,7 +106,8 @@
             SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
 #endif
-            MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnFlash;
+            MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnExplodingGrenade;
+            PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnHurting;
 #if Full
             this.playerNames = null;
             this.playerResize = null;

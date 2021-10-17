@@ -27,13 +27,16 @@
             this.plugin = plugin;
         }
 
-        public void OnFlash(ExplodingGrenadeEventArgs ev)
+        public void OnHurting(HurtingEventArgs ev)
         {
-            if (ev.IsFrag)
+            if (ev.Attacker.Role.Is939() && ev.Attacker.GetEffect(EffectType.Ensnared).Intensity > 0 && ev.Attacker != ev.Target)
             {
-                return;
+                ev.IsAllowed = false;
             }
+        }
 
+        public void OnExplodingGrenade(ExplodingGrenadeEventArgs ev)
+        {
             if (this.plugin.Config.Debug)
             {
                 Log.Debug("Event OnFlash has been taken");
