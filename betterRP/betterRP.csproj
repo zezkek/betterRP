@@ -139,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandMethods.cs" />
+    <Compile Include="Commands\Cuff\Cuff.cs" />
     <Compile Include="Commands\Do\Do.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="GlobalSuppressions.cs" />

@@ -72,8 +72,7 @@
                     }
 
                     Log.Info(msg);
-                    foreach (Player player in Player.List.Where(p => (p.Role != RoleType.Spectator || p.Role != RoleType.None)
-                    && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10 /*Ёбанный хардкод, хуй знает, как передать правильно обьект класса Plugin*/))
+                    foreach (Player player in Player.List.Where(p => (((p.Role != RoleType.Spectator || p.Role != RoleType.None) && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10) || p.IsOverwatchEnabled)))
                     {
                         player.Broadcast(7, "<size=25><color=#C1B5B5>" + msg + "</color></size>");
                     }

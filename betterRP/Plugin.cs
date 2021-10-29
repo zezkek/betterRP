@@ -1,4 +1,5 @@
-﻿namespace BetterRP
+﻿//#define Full
+namespace BetterRP
 {
     using System;
     using System.Collections.Generic;
