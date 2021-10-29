@@ -19,6 +19,8 @@
     {
         private readonly Plugin plugin;
 
+        Dictionary<Room, float> defaultBright = new Dictionary<Room, float> { };
+
         public StartsBlackout(Plugin plugin)
         {
             this.plugin = plugin;
@@ -26,6 +28,7 @@
 
         public void OnRoundStarted()
         {
+            this.defaultBright.Clear();
             this.plugin.NewCoroutine(this.BlackoutDealy());
         }
 
@@ -33,6 +36,30 @@
         {
             yield return MEC.Timing.WaitForSeconds(this.plugin.Config.BlackoutDelay);
             Map.TurnOffAllLights(5);
+            foreach (var item in Map.Rooms)
+            {
+                this.defaultBright.Add(item, item.LightIntensity);
+                item.LightIntensity = UnityEngine.Random.Range(0.1f, this.defaultBright[item]);
+            }
+
+            while (Round.IsStarted)
+            {
+                List<Room> rooms = Map.Rooms.ToList();
+                rooms.ShuffleList();
+                for (int i = 0; i < 5; i++)
+                {
+                    rooms[i].TurnOffLights(5f);
+                }
+
+                yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(1f, 7f));
+                for (int i = 0; i < 5; i++)
+                {
+                    rooms[i].LightIntensity = UnityEngine.Random.Range(0.1f, this.defaultBright[rooms[i]]);
+                }
+
+                yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(30f, 90f));
+            }
+
             yield break;
         }
     }

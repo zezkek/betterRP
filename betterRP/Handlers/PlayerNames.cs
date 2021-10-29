@@ -44,20 +44,22 @@
             Plugin.PluginItem.NewCoroutine(this.BadgeDisplay());
         }
 
+        private Dictionary<string, int> ConnectionTextTimer = new Dictionary<string, int> { };
+
         public IEnumerator<float> BadgeDisplay()
         {
             yield return MEC.Timing.WaitForSeconds(Plugin.PluginItem.Config.HintDisplayTime);
             while (Round.IsStarted)
             {
-                string name = "<align=left><pos=-21%><b><size=20><color=#C1B5B5>ПОЛЬЗОВАТЕЛЬ</pos><pos=-7%> :  </color>" +
+                string name = "<pos=-21%><b><size=20><color=#C1B5B5>ПОЛЬЗОВАТЕЛЬ</pos><pos=-7%>  :  </color>" +
                         "<color=%color>%name</color></pos>\n";
                 string post = "<pos=-21%><b><size=20>" +
                         "<color=#C1B5B5>ДОЛЖНОСТЬ</pos>" +
-                        "<pos=-7%> :  </color><color=%color>%post</color>" +
+                        "<pos=-7%>  :  </color><color=%color>%post</color>" +
                         "</size></pos>\n";
                 string role = "<pos=-21%><b><size=20>" +
                         "<color=#C1B5B5>РОЛЬ" +
-                        "<pos=-7%> :  </color><color=%color>%role</color></size></pos>\n";
+                        "<pos=-7%>  :  </color><color=%color>%role</color></size></pos>\n";
                 foreach (var player in Player.List.Where(x => x != null && x.Role != RoleType.None))
                 {
                     int lines = 11;
@@ -90,17 +92,34 @@
                         display = "\n" + display;
                     }
 
-                    display += name.Replace("%name", player.Nickname);
+                    display += "<align=left>";
+                    if (this.ConnectionTextTimer.TryGetValue(player.UserId, out int seconds))
+                    {
+                        if (seconds > 0)
+                        {
+                            this.ConnectionTextTimer[player.UserId]--;
+                            display += name.Replace("%name", player.Nickname);
+                        }
+                    }
+                    else
+                    {
+                        this.ConnectionTextTimer.Add(player.UserId, 7);
+                    }
+
                     switch (player.Team)
                     {
                         case Team.SCP:
-                            display += role.Replace("%role", player.DisplayNickname);
+
                             if (player.Role == RoleType.Scp0492 && player.CustomInfo != string.Empty && player.CustomInfo != null)
                             {
                                 display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
-                                display = display.Replace("%color", "#FFD966");
+                            }
+                            else
+                            {
+                                display += role.Replace("%role", player.DisplayNickname);
                             }
 
+                            display = display.Replace("%color", "#990000");
                             break;
                         case Team.MTF:
                             if (player.Role != RoleType.FacilityGuard)
@@ -115,20 +134,20 @@
                             switch (player.Role)
                             {
                                 case RoleType.NtfSergeant:
-                                    display += post.Replace("%post", $"Лейтенант {player.UnitName}");
-                                    display = display.Replace("%color", "#1E90FF");
+                                    display += post.Replace("%post", $"Сержант {player.UnitName}");
+                                    display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.NtfCaptain:
                                     display += post.Replace("%post", $"Командир {player.UnitName}");
                                     display = display.Replace("%color", "#000080");
                                     break;
                                 case RoleType.NtfPrivate:
-                                    display += post.Replace("%post", $"Кадет {player.UnitName}");
-                                    display = display.Replace("%color", "#00BFFF");
+                                    display += post.Replace("%post", $"Капрал {player.UnitName}");
+                                    display = display.Replace("%color", "#8BC5FF");
                                     break;
                                 case RoleType.NtfSpecialist:
-                                    display += post.Replace("<color=%color>%post</color>", $"{player.CustomInfo} <color=%color>{player.UnitName}</color>");
-                                    display = display.Replace("%color", "#0000CD");
+                                    display += post.Replace("%post", $"Специалист ВУС {player.UnitName}");
+                                    display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.FacilityGuard:
                                     display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
@@ -141,8 +160,28 @@
                             break;
                         case Team.CHI:
                             display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ПОЗЫВНОЙ");
-                            display += post.Replace("%post", "Агент Хаоса");
-                            display = display.Replace("%color", "#6aa84f");
+                            switch (player.Role)
+                            {
+                                case RoleType.ChaosMarauder:
+                                    display += post.Replace("%post", $"Мародёр Хаоса");
+                                    display = display.Replace("%color", "#274e13");
+                                    break;
+                                case RoleType.ChaosRepressor:
+                                    display += post.Replace("%post", $"Репрессор Хаоса");
+                                    display = display.Replace("%color", "#274e13");
+                                    break;
+                                case RoleType.ChaosRifleman:
+                                    display += post.Replace("%post", $"Стрелок Хаоса");
+                                    display = display.Replace("%color", "#38761d");
+                                    break;
+                                case RoleType.ChaosConscript:
+                                    display += post.Replace("%post", $"Новобранец Хаоса");
+                                    display = display.Replace("%color", "#6aa84f");
+                                    break;
+                                default:
+                                    break;
+                            }
+
                             break;
                         case Team.RSC:
                             display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ФИО");
@@ -162,18 +201,34 @@
                             continue;
                     }
 
-                    player.ShowHint(display + "</pos></size></b></align>", 10.5f);
+                    player.ShowHint(display + "</pos></size></b></align>", 1.5f);
                 }
 
-                yield return MEC.Timing.WaitForSeconds(10f);
+                yield return MEC.Timing.WaitForSeconds(1f);
             }
+
+            this.ConnectionTextTimer.Clear();
         }
 
         public void OnDying(DyingEventArgs ev)
         {
+            if (!ev.IsAllowed)
+            {
+                return;
+            }
+
             if (ev.Killer.Role == RoleType.Scp049)
             {
                 Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(ev.Target));
+            }
+
+            if (this.ConnectionTextTimer.TryGetValue(ev.Target.UserId, out int seconds))
+            {
+                this.ConnectionTextTimer[ev.Target.UserId] = 7;
+            }
+            else
+            {
+                this.ConnectionTextTimer.Add(ev.Target.UserId, 7);
             }
         }
 
@@ -189,29 +244,47 @@
             yield break;
         }
 
+        public void OnSpawning(SpawningEventArgs ev)
+        {
+            Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.RoleType));
+            if (this.ConnectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
+            {
+                this.ConnectionTextTimer[ev.Player.UserId] = 7;
+            }
+            else
+            {
+                this.ConnectionTextTimer.Add(ev.Player.UserId, 7);
+            }
+        }
+
         public void OnChangingRole(ChangingRoleEventArgs ev)
         {
-            if (Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.NewRole != RoleType.None)
+            Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.NewRole));
+            if (this.ConnectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
+            {
+                this.ConnectionTextTimer[ev.Player.UserId] = 7;
+            }
+            else
+            {
+                this.ConnectionTextTimer.Add(ev.Player.UserId, 7);
+            }
+        }
+
+        private IEnumerator<float> SetName(Player player, RoleType role)
+        {
+            yield return MEC.Timing.WaitForSeconds(1f);
+            if (Plugin.PluginItem.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
                 string selectedname;
 
-                if (ev.Player.IsHuman)
+                if (player.Team != Team.SCP)
                 {
-                    ev.Player.CustomInfo = string.Empty;
+                    player.CustomInfo = string.Empty;
 
-                    // Pattern
-                    string message = "\n\n<b><size=35>" +
-                        "<color=#C1B5B5>Вы сотрудник</color> " +
-                        "<color=%color>%post</color><color=#C1B5B5>,</color> " +
-                        "<color=#C1B5B5>Ваша должность - </color>" +
-                        "<color=%color>%subclass</color>" +
-                        "</size></b>";
-
-                    switch (ev.NewRole)
+                    switch (role)
                     {
                         case RoleType.ClassD:
-                            ev.Player.DisplayNickname = "D-" + this.rnd.Next(10000, 99999).ToString();
-                            message = message.Replace("%color", "#CE7E00").Replace("Ваша должность", "Ваш номер").Replace("%post", "класса-D").Replace("%subclass", ev.Player.DisplayNickname);
+                            player.DisplayNickname = "D-" + this.rnd.Next(10000, 99999).ToString();
                             break;
                         case RoleType.Scientist:
                             if (this.surnames.Count > 0)
@@ -221,35 +294,32 @@
                             }
                             else
                             {
-                                selectedname = ev.Player.Nickname;
+                                selectedname = player.Nickname;
                             }
 
-                            ev.Player.DisplayNickname = "д-р " + selectedname;
+                            player.DisplayNickname = "д-р " + selectedname;
 
-                            if (ev.Player.HasItem(ItemType.KeycardFacilityManager))
+                            if (player.HasItem(ItemType.KeycardFacilityManager))
                             {
-                                ev.Player.CustomInfo = "<color=#FFD966>Заведующий Комплекса</color>";
+                                player.CustomInfo = "<color=#FFD966>Заведующий Комплекса</color>";
                             }
-                            else if (ev.Player.HasItem(ItemType.KeycardZoneManager))
+                            else if (player.HasItem(ItemType.KeycardZoneManager))
                             {
-                                ev.Player.CustomInfo = "<color=#FFD966>Заведующий Зоны</color>";
+                                player.CustomInfo = "<color=#FFD966>Заведующий Зоны</color>";
                             }
-                            else if (ev.Player.HasItem(ItemType.KeycardResearchCoordinator))
+                            else if (player.HasItem(ItemType.KeycardResearchCoordinator))
                             {
-                                ev.Player.CustomInfo = "<color=#FFD966>Координатор исследований</color>";
+                                player.CustomInfo = "<color=#FFD966>Координатор исследований</color>";
                             }
-                            else if (ev.Player.HasItem(ItemType.KeycardContainmentEngineer))
+                            else if (player.HasItem(ItemType.KeycardContainmentEngineer))
                             {
-                                ev.Player.CustomInfo = "<color=#FFD966>Инженер Комплекса</color>";
+                                player.CustomInfo = "<color=#FFD966>Инженер Комплекса</color>";
                             }
                             else
                             {
-                                ev.Player.CustomInfo = "<color=#FFD966>Научный сотрудник</color>";
+                                player.CustomInfo = "<color=#FFD966>Научный сотрудник</color>";
                             }
 
-                            message = message.Replace(" сотрудник", string.Empty);
-                            message = message.Replace("<color=%color>%subclass</color>", ev.Player.CustomInfo);
-                            message = message.Replace("%color", "#FFD966").Replace("%post", ev.Player.DisplayNickname);
                             break;
 
                         case RoleType.FacilityGuard:
@@ -260,36 +330,33 @@
                             }
                             else
                             {
-                                selectedname = ev.Player.Nickname;
+                                selectedname = player.Nickname;
                             }
 
-                            ev.Player.DisplayNickname = selectedname;
+                            player.DisplayNickname = selectedname;
 
-                            if (ev.Player.HasItem(ItemType.KeycardNTFCommander))
+                            if (player.HasItem(ItemType.KeycardNTFCommander))
                             {
-                                ev.Player.CustomInfo = "<color=#757575>Начальник СБ</color>";
+                                player.CustomInfo = "<color=#757575>Начальник СБ</color>";
                             }
-                            else if (ev.Player.HasItem(ItemType.KeycardNTFLieutenant))
+                            else if (player.HasItem(ItemType.KeycardNTFLieutenant))
                             {
-                                ev.Player.CustomInfo = "<color=#757575>Старший сотрудник СБ</color>";
+                                player.CustomInfo = "<color=#757575>Старший сотрудник СБ</color>";
                             }
-                            else if (ev.Player.HasItem(ItemType.KeycardGuard))
+                            else if (player.HasItem(ItemType.KeycardNTFOfficer))
                             {
-                                ev.Player.CustomInfo = "<color=#757575>Сотрудник СБ</color>";
+                                player.CustomInfo = "<color=#757575>Сотрудник СБ</color>";
                             }
                             else
                             {
-                                ev.Player.CustomInfo = "<color=#757575>Младший сотрудник СБ</color>";
+                                player.CustomInfo = "<color=#757575>Младший сотрудник СБ</color>";
                             }
 
-                            message = message.Replace("<color=%color>%subclass</color>", ev.Player.CustomInfo + $" <color=%color>{ev.Player.DisplayNickname}</color>");
-                            message = message.Replace("%color", "#757575").Replace("%post", "СБ Комплекса");
                             break;
 
                         default:
-                            if (ev.Player.Team == Team.CHI)
+                            if (player.Team == Team.CHI || player.Team == Team.MTF)
                             {
-                                message = message.Replace("сотрудник</color> ", "агент</color> <color=%color>Хаоса</color>").Replace("<color=%color>%post</color>", string.Empty).Replace("Ваша должность", "Ваш позывной");
                                 if (this.callSigns.Count > 0)
                                 {
                                     selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
@@ -297,87 +364,34 @@
                                 }
                                 else
                                 {
-                                    selectedname = ev.Player.Nickname;
+                                    selectedname = player.Nickname;
                                 }
 
-                                if (ev.NewRole == RoleType.ChaosMarauder)
-                                {
-                                    message = message.Replace("%color", "#274e13");
-                                }
-                                else if (ev.NewRole == RoleType.ChaosRepressor)
-                                {
-                                    message = message.Replace("%color", "#38761d");
-                                }
-                                else if (ev.NewRole == RoleType.ChaosRifleman)
-                                {
-                                    message = message.Replace("%color", "#38761d");
-                                }
-                                else
-                                {
-                                    message = message.Replace("%color", "#6aa84f");
-                                }
-
-                                ev.Player.DisplayNickname = $"'{selectedname}'";
-                                message = message.Replace("%subclass", ev.Player.DisplayNickname);
-                                break;
-                            }
-                            else if (ev.Player.Team == Team.MTF)
-                            {
-                                message = message.Replace("сотрудник</color> ", "член</color> <color=%color>МОГ Эпсилон-11</color>").Replace("<color=%color>%post</color>", string.Empty).Replace("Ваша должность", "Ваш позывной");
-                                if (this.callSigns.Count > 0)
-                                {
-                                    selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
-                                    this.callSigns.Remove(selectedname);
-                                }
-                                else
-                                {
-                                    selectedname = ev.Player.Nickname;
-                                }
-
-                                if (ev.NewRole == RoleType.NtfCaptain)
-                                {
-                                    message = message.Replace("%color", "#000080");
-                                }
-                                else if (ev.NewRole == RoleType.NtfSpecialist)
-                                {
-                                    ev.Player.CustomInfo = "<color=#0000CD>Специалист по ВУС</color>";
-                                    message = message.Replace("%color", "#0000CD");
-                                }
-                                else if (ev.NewRole == RoleType.NtfSergeant)
-                                {
-                                    message = message.Replace("%color", "#1E90FF");
-                                }
-                                else
-                                {
-                                    message = message.Replace("%color", "#00BFFF");
-                                }
-
-                                ev.Player.DisplayNickname = $"'{selectedname}'";
-                                message = message.Replace("%subclass", ev.Player.DisplayNickname);
+                                player.DisplayNickname = $"'{selectedname}'";
                                 break;
                             }
                             else
                             {
-                                ev.Player.DisplayNickname = ev.Player.Nickname;
-                                message = string.Empty;
+                                player.DisplayNickname = string.Empty;
                                 break;
                             }
                     }
 
-                    Log.Debug($"Player Name: {ev.Player.Nickname}\nPlayer Nickname: {ev.Player.DisplayNickname}\nPlayer Custom Info: {ev.Player.CustomInfo}", Plugin.PluginItem.Config.Debug);
-                    ev.Player.ShowHint(message, Plugin.PluginItem.Config.HintDisplayTime);
+                    Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.PluginItem.Config.Debug);
+
+                    // player.ShowHint(message, Plugin.PluginItem.Config.HintDisplayTime);
                 }
                 else
                 {
-                    if (ev.NewRole != RoleType.Scp0492)
+                    if (role != RoleType.Scp0492)
                     {
-                        ev.Player.CustomInfo = string.Empty;
-                        ev.Player.DisplayNickname = "[ДАННЫЕ УДАЛЕНЫ]";
+                        player.CustomInfo = string.Empty;
+                        player.DisplayNickname = "[ДАННЫЕ УДАЛЕНЫ]";
                     }
-                    else if (ev.Player.DisplayNickname == string.Empty || ev.Player.DisplayNickname == ev.Player.Nickname || ev.Player.DisplayNickname == null)
+                    else if (player.DisplayNickname == string.Empty || player.DisplayNickname == player.Nickname || player.DisplayNickname == null)
                     {
-                        ev.Player.CustomInfo = string.Empty;
-                        ev.Player.DisplayNickname = ev.Player.Nickname;
+                        player.CustomInfo = string.Empty;
+                        player.DisplayNickname = player.Nickname;
                     }
                 }
             }

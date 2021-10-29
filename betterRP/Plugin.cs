@@ -1,4 +1,4 @@
-﻿//#define Full
+﻿#define Full
 namespace BetterRP
 {
     using System;
@@ -25,7 +25,7 @@ namespace BetterRP
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(0, 3, 8);
+        public override Version Version => new Version(0, 3, 9);
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
@@ -51,8 +51,9 @@ namespace BetterRP
         private GrenadesAdditionalEffects grenadesAdditionalEffects;
 #if Full
         private StartsBlackout startsBlackout;
-
+#if PlayerLeavle
         private PlayerLeave replaceSCP;
+#endif
 #endif
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -69,14 +70,19 @@ namespace BetterRP
 #endif
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
 #if Full
+#if PlayerLeave
             this.replaceSCP = new PlayerLeave();
+#endif
             this.startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
             PlayerEv.Dying += this.playerNames.OnDying;
+            PlayerEv.Spawning += this.playerNames.OnSpawning;
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
+#if PlayerLeave
             PlayerEv.Left += this.replaceSCP.OnDisconnect;
+#endif
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted += this.playerNames.OnRoundStarted;
@@ -100,9 +106,12 @@ namespace BetterRP
 #if Full
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
             PlayerEv.Dying -= this.playerNames.OnDying;
+            PlayerEv.Spawning -= this.playerNames.OnSpawning;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
+#if PlayerLeave
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
+#endif
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
@@ -125,6 +134,7 @@ namespace BetterRP
                 base.OnDisabled();
             }
         }
+
 #if Full
         private void LoadNames()
         {
