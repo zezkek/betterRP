@@ -19,6 +19,10 @@
 
         private List<string> surnames = new List<string>();
         private List<string> callSigns = new List<string>();
+        private List<char> names = new List<char>
+        {
+            'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Э', 'Ю', 'Я',
+        };
 
         public void OnWaiting()
         {
@@ -42,13 +46,15 @@
         public void OnRoundStarted()
         {
             Plugin.PluginItem.NewCoroutine(this.BadgeDisplay());
+
         }
 
-        private Dictionary<string, int> ConnectionTextTimer = new Dictionary<string, int> { };
+        private Dictionary<string, int> connectionTextTimer = new Dictionary<string, int> { };
+
+        private Dictionary<string, string> militaryRole = new Dictionary<string, string> { };
 
         public IEnumerator<float> BadgeDisplay()
         {
-            yield return MEC.Timing.WaitForSeconds(Plugin.PluginItem.Config.HintDisplayTime);
             while (Round.IsStarted)
             {
                 string name = "<pos=-21%><b><size=20><color=#C1B5B5>ПОЛЬЗОВАТЕЛЬ</pos><pos=-7%>  :  </color>" +
@@ -93,32 +99,23 @@
                     }
 
                     display += "<align=left>";
-                    if (this.ConnectionTextTimer.TryGetValue(player.UserId, out int seconds))
+                    if (this.connectionTextTimer.TryGetValue(player.UserId, out int seconds))
                     {
                         if (seconds > 0)
                         {
-                            this.ConnectionTextTimer[player.UserId]--;
+                            this.connectionTextTimer[player.UserId]--;
                             display += name.Replace("%name", player.Nickname);
                         }
                     }
                     else
                     {
-                        this.ConnectionTextTimer.Add(player.UserId, 7);
+                        this.connectionTextTimer.Add(player.UserId, 7);
                     }
 
                     switch (player.Team)
                     {
                         case Team.SCP:
-
-                            if (player.Role == RoleType.Scp0492 && player.CustomInfo != string.Empty && player.CustomInfo != null)
-                            {
-                                display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
-                            }
-                            else
-                            {
-                                display += role.Replace("%role", player.DisplayNickname);
-                            }
-
+                            display += role.Replace("%role", "[ДАННЫЕ УДАЛЕНЫ]");
                             display = display.Replace("%color", "#990000");
                             break;
                         case Team.MTF:
@@ -135,18 +132,54 @@
                             {
                                 case RoleType.NtfSergeant:
                                     display += post.Replace("%post", $"Сержант {player.UnitName}");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Сержант {player.UnitName}").Replace("%color", "#0180DA"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Сержант {player.UnitName}").Replace("%color", "#0180DA");
+                                    }
+
                                     display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.NtfCaptain:
                                     display += post.Replace("%post", $"Командир {player.UnitName}");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Командир {player.UnitName}").Replace("%color", "#000080"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Командир {player.UnitName}").Replace("%color", "#000080");
+                                    }
+
                                     display = display.Replace("%color", "#000080");
                                     break;
                                 case RoleType.NtfPrivate:
                                     display += post.Replace("%post", $"Капрал {player.UnitName}");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Капрал {player.UnitName}").Replace("%color", "#8BC5FF"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Капрал {player.UnitName}").Replace("%color", "#8BC5FF");
+                                    }
+
                                     display = display.Replace("%color", "#8BC5FF");
                                     break;
                                 case RoleType.NtfSpecialist:
                                     display += post.Replace("%post", $"Специалист ВУС {player.UnitName}");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Специалист ВУС {player.UnitName}").Replace("%color", "#0180DA"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Специалист ВУС {player.UnitName}").Replace("%color", "#0180DA");
+                                    }
+
                                     display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.FacilityGuard:
@@ -160,22 +193,59 @@
                             break;
                         case Team.CHI:
                             display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ПОЗЫВНОЙ");
+                            string postMessage;
                             switch (player.Role)
                             {
                                 case RoleType.ChaosMarauder:
-                                    display += post.Replace("%post", $"Мародёр Хаоса");
+                                    postMessage = post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13");
+                                    }
+
                                     display = display.Replace("%color", "#274e13");
                                     break;
                                 case RoleType.ChaosRepressor:
-                                    display += post.Replace("%post", $"Репрессор Хаоса");
+                                    postMessage =  post.Replace("%post", $"Репрессор Хаоса");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Репрессор Хаоса").Replace("%color", "#274e13"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Репрессор Хаоса").Replace("%color", "#274e13");
+                                    }
+
                                     display = display.Replace("%color", "#274e13");
                                     break;
                                 case RoleType.ChaosRifleman:
-                                    display += post.Replace("%post", $"Стрелок Хаоса");
+                                    postMessage =  post.Replace("%post", $"Стрелок Хаоса");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Стрелок Хаоса").Replace("%color", "#38761d"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Стрелок Хаоса").Replace("%color", "#38761d");
+                                    }
+
                                     display = display.Replace("%color", "#38761d");
                                     break;
                                 case RoleType.ChaosConscript:
-                                    display += post.Replace("%post", $"Новобранец Хаоса");
+                                    postMessage =  post.Replace("%post", $"Новобранец Хаоса");
+                                    if (!this.militaryRole.ContainsKey(player.UserId))
+                                    {
+                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Новобранец Хаоса").Replace("%color", "#6aa84f"));
+                                    }
+                                    else
+                                    {
+                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Новобранец Хаоса").Replace("%color", "#6aa84f");
+                                    }
+
                                     display = display.Replace("%color", "#6aa84f");
                                     break;
                                 default:
@@ -185,7 +255,15 @@
                             break;
                         case Team.RSC:
                             display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ФИО");
-                            display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
+                            if (player.CustomInfo != string.Empty || player.CustomInfo != null)
+                            {
+                                display += post.Replace("<color=%color>%post</color>", player.CustomInfo);
+                            }
+                            else
+                            {
+                                display += post.Replace("%post", "Научный Сотрудник");
+                            }
+
                             display = display.Replace("%color", "#FFD966");
                             break;
                         case Team.CDP:
@@ -207,80 +285,105 @@
                 yield return MEC.Timing.WaitForSeconds(1f);
             }
 
-            this.ConnectionTextTimer.Clear();
+            this.connectionTextTimer.Clear();
         }
 
-        public void OnDying(DyingEventArgs ev)
-        {
-            if (!ev.IsAllowed)
-            {
-                return;
-            }
+        //public void OnDying(DyingEventArgs ev)
+        //{
+        //    if (!ev.IsAllowed)
+        //    {
+        //        return;
+        //    }
 
-            if (ev.Killer.Role == RoleType.Scp049)
-            {
-                Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(ev.Target));
-            }
+        //    if (ev.Killer.Role == RoleType.Scp049)
+        //    {
+        //        Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(ev.Target));
+        //    }
 
-            if (this.ConnectionTextTimer.TryGetValue(ev.Target.UserId, out int seconds))
-            {
-                this.ConnectionTextTimer[ev.Target.UserId] = 7;
-            }
-            else
-            {
-                this.ConnectionTextTimer.Add(ev.Target.UserId, 7);
-            }
-        }
+        //    if (this.connectionTextTimer.TryGetValue(ev.Target.UserId, out int seconds))
+        //    {
+        //        this.connectionTextTimer[ev.Target.UserId] = 7;
+        //    }
+        //    else
+        //    {
+        //        this.connectionTextTimer.Add(ev.Target.UserId, 7);
+        //    }
+        //}
 
         public IEnumerator<float> NameChangeDelay(Player player)
         {
+            string customInfo = player.CustomInfo;
+            string displayNickname = player.DisplayNickname;
+            player.CustomInfo = string.Empty;
+            player.DisplayNickname = string.Empty;
             yield return MEC.Timing.WaitForSeconds(10f);
-            if (!player.IsAlive || player.Role != RoleType.Scp0492)
+            if (player == null)
             {
-                player.DisplayNickname = player.Nickname;
-                player.CustomInfo = string.Empty;
+                yield break;
             }
 
+            if (player.IsAlive && player.Role != RoleType.Scp0492)
+            {
+                yield break;
+            }
+
+            if (!player.IsAlive)
+            {
+                player.CustomInfo = string.Empty;
+                player.DisplayNickname = string.Empty;
+                this.militaryRole.Remove(player.UserId);
+                yield break;
+            }
+
+            if (player.CustomInfo != string.Empty || player.CustomInfo != null)
+            {
+                player.CustomInfo = customInfo;
+            }
+            else if (this.militaryRole.TryGetValue(player.UserId, out string cInfo))
+            {
+                player.CustomInfo = cInfo;
+                this.militaryRole.Remove(player.UserId);
+            }
+
+            player.DisplayNickname = displayNickname;
             yield break;
         }
 
         public void OnSpawning(SpawningEventArgs ev)
         {
             Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.RoleType));
-            if (this.ConnectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
+            if (this.connectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
             {
-                this.ConnectionTextTimer[ev.Player.UserId] = 7;
+                this.connectionTextTimer[ev.Player.UserId] = 7;
             }
             else
             {
-                this.ConnectionTextTimer.Add(ev.Player.UserId, 7);
+                this.connectionTextTimer.Add(ev.Player.UserId, 7);
             }
         }
 
         public void OnChangingRole(ChangingRoleEventArgs ev)
         {
             Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.NewRole));
-            if (this.ConnectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
+            if (this.connectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
             {
-                this.ConnectionTextTimer[ev.Player.UserId] = 7;
+                this.connectionTextTimer[ev.Player.UserId] = 7;
             }
             else
             {
-                this.ConnectionTextTimer.Add(ev.Player.UserId, 7);
+                this.connectionTextTimer.Add(ev.Player.UserId, 7);
             }
         }
 
         private IEnumerator<float> SetName(Player player, RoleType role)
         {
-            yield return MEC.Timing.WaitForSeconds(1f);
+            yield return MEC.Timing.WaitForSeconds(0.1f);
             if (Plugin.PluginItem.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
                 string selectedname;
 
                 if (player.Team != Team.SCP)
                 {
-                    player.CustomInfo = string.Empty;
-
                     switch (role)
                     {
                         case RoleType.ClassD:
@@ -297,7 +400,7 @@
                                 selectedname = player.Nickname;
                             }
 
-                            player.DisplayNickname = "д-р " + selectedname;
+                            player.DisplayNickname = $"д-р {selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Count)]}. {this.names[UnityEngine.Random.Range(0, this.names.Count)]}.";
 
                             if (player.HasItem(ItemType.KeycardFacilityManager))
                             {
@@ -315,10 +418,6 @@
                             {
                                 player.CustomInfo = "<color=#FFD966>Инженер Комплекса</color>";
                             }
-                            else
-                            {
-                                player.CustomInfo = "<color=#FFD966>Научный сотрудник</color>";
-                            }
 
                             break;
 
@@ -333,7 +432,7 @@
                                 selectedname = player.Nickname;
                             }
 
-                            player.DisplayNickname = selectedname;
+                            player.DisplayNickname = $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Count)]}. {this.names[UnityEngine.Random.Range(0, this.names.Count)]}.";
 
                             if (player.HasItem(ItemType.KeycardNTFCommander))
                             {
@@ -372,14 +471,13 @@
                             }
                             else
                             {
-                                player.DisplayNickname = string.Empty;
-                                break;
+                                Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(player));
                             }
+
+                            break;
                     }
 
                     Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.PluginItem.Config.Debug);
-
-                    // player.ShowHint(message, Plugin.PluginItem.Config.HintDisplayTime);
                 }
                 else
                 {
@@ -387,11 +485,6 @@
                     {
                         player.CustomInfo = string.Empty;
                         player.DisplayNickname = "[ДАННЫЕ УДАЛЕНЫ]";
-                    }
-                    else if (player.DisplayNickname == string.Empty || player.DisplayNickname == player.Nickname || player.DisplayNickname == null)
-                    {
-                        player.CustomInfo = string.Empty;
-                        player.DisplayNickname = player.Nickname;
                     }
                 }
             }

@@ -20,13 +20,8 @@
         [Description("Enable or disable player resize")]
         public bool PlayerResizeEnabled { get; set; } = true;
 
-        [Description("New name hint message time")]
-        public float HintDisplayTime { get; set; } = 10;
-
         public string ItemConfigFolder { get; set; } = Path.Combine(Paths.Configs, "BetterRP");
 
         public float BlackoutDelay { get; set; } = 15f;
-
-        public float JumpStaminaCost { get; set; } = 0.5f;
     }
 }

@@ -27,33 +27,25 @@ namespace BetterRP
 
         public override Version Version => new Version(0, 3, 9);
 
-#pragma warning disable SA1201 // Elements should appear in the correct order
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
-#pragma warning restore SA1201 // Elements should appear in the correct order
 
         public void AddCoroutine(MEC.CoroutineHandle coroutineHandle) => this.coroutines.Add(coroutineHandle);
 
         public void NewCoroutine(IEnumerator<float> coroutine, MEC.Segment segment = MEC.Segment.Update) => this.coroutines.Add(MEC.Timing.RunCoroutine(coroutine, segment));
 
-#if Full
         public static List<string> SurnameBase = new List<string> { };
 
         public static List<string> CallSignsBase = new List<string> { };
 
         public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
 
-#pragma warning disable SA1201 // Elements should appear in the correct order
         private PlayerNames playerNames;
-#pragma warning restore SA1201 // Elements should appear in the correct order
 
         private PlayerResize playerResize;
-#endif
         private GrenadesAdditionalEffects grenadesAdditionalEffects;
-#if Full
         private StartsBlackout startsBlackout;
 #if PlayerLeavle
         private PlayerLeave replaceSCP;
-#endif
 #endif
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -63,21 +55,19 @@ namespace BetterRP
                 Log.Debug("Better RP is disabled via configs. It will not be loaded.");
                 return;
             }
-#if Full
             // commandMethods = new CommandMethods(this);
             this.playerNames = new PlayerNames();
             this.playerResize = new PlayerResize();
-#endif
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
-#if Full
 #if PlayerLeave
             this.replaceSCP = new PlayerLeave();
 #endif
             this.startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
-            PlayerEv.Dying += this.playerNames.OnDying;
+            //PlayerEv.Dying += this.playerNames.OnDying;
             PlayerEv.Spawning += this.playerNames.OnSpawning;
+            PlayerEv.Spawning += this.playerResize.OnSpawning;
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
 #if PlayerLeave
@@ -86,12 +76,9 @@ namespace BetterRP
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted += this.playerNames.OnRoundStarted;
-#endif
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnHurting;
-#if Full
             this.LoadNames();
-#endif
             base.OnEnabled();
         }
 
@@ -103,10 +90,10 @@ namespace BetterRP
             {
                 MEC.Timing.KillCoroutines(this.coroutines.ToArray());
             }
-#if Full
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
-            PlayerEv.Dying -= this.playerNames.OnDying;
+            //PlayerEv.Dying -= this.playerNames.OnDying;
             PlayerEv.Spawning -= this.playerNames.OnSpawning;
+            PlayerEv.Spawning -= this.playerResize.OnSpawning;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
 #if PlayerLeave
@@ -115,17 +102,14 @@ namespace BetterRP
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
-#endif
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnHurting;
-#if Full
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
-#endif
             base.OnDisabled();
 
             if (this.Config.IsEnabled)
@@ -135,7 +119,6 @@ namespace BetterRP
             }
         }
 
-#if Full
         private void LoadNames()
         {
             try
@@ -182,6 +165,5 @@ namespace BetterRP
                 throw;
             }
         }
-#endif
     }
 }

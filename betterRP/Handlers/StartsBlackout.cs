@@ -39,7 +39,7 @@
             foreach (var item in Map.Rooms)
             {
                 this.defaultBright.Add(item, item.LightIntensity);
-                item.LightIntensity = UnityEngine.Random.Range(0.1f, this.defaultBright[item]);
+                item.LightIntensity = UnityEngine.Random.Range(0.3f, this.defaultBright[item]);
             }
 
             while (Round.IsStarted)
@@ -54,7 +54,7 @@
                 yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(1f, 7f));
                 for (int i = 0; i < 5; i++)
                 {
-                    rooms[i].LightIntensity = UnityEngine.Random.Range(0.1f, this.defaultBright[rooms[i]]);
+                    rooms[i].LightIntensity = UnityEngine.Random.Range(0.3f, this.defaultBright[rooms[i]]);
                 }
 
                 yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(30f, 90f));

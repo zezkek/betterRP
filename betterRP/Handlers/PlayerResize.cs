@@ -14,26 +14,37 @@
 
     public class PlayerResize
     {
-        private float xScale;
-        private float yScale;
+        public void OnSpawning(SpawningEventArgs ev)
+        {
+            Plugin.PluginItem.NewCoroutine(this.ChangeSizeDelay(ev.Player));
+        }
 
         public void OnChangingRoleEventArgs(ChangingRoleEventArgs ev)
         {
-            if (ev.Player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && ev.Player != null && ev.NewRole != RoleType.None)
-            {
-                this.xScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                this.yScale = UnityEngine.Random.Range(0.9f, 1.1f);
-                ev.Player.Scale = new Vector3(this.xScale, this.yScale, 1);
-            }
-            else
-            {
-                ev.Player.Scale = new Vector3(1, 1, 1);
-            }
+            Plugin.PluginItem.NewCoroutine(this.ChangeSizeDelay(ev.Player));
         }
 
         public void OnDying(DyingEventArgs ev)
         {
             ev.Target.Scale = new Vector3(1, 1, 1);
+        }
+
+        private IEnumerator<float> ChangeSizeDelay(Player player)
+        {
+            yield return MEC.Timing.WaitForSeconds(0.1f);
+            if (player == null)
+            {
+                yield break;
+            }
+
+            if (player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && player.Role != RoleType.None)
+            {
+                player.Scale = new Vector3(UnityEngine.Random.Range(0.9f, 1.1f), UnityEngine.Random.Range(0.9f, 1.1f), 1);
+            }
+            else if (player.IsAlive)
+            {
+                player.Scale = new Vector3(1, 1, 1);
+            }
         }
     }
 }
