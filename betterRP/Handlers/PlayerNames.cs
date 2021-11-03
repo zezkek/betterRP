@@ -19,34 +19,71 @@
 
         private List<string> surnames = new List<string>();
         private List<string> callSigns = new List<string>();
-        private List<char> names = new List<char>
+        private List<string> sponsorsNames = new List<string>();
+        private string names = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ";
+        private int classDPart;
+        private HashSet<string> classDperRound = new HashSet<string> { };
+
+        public enum NameBase
         {
-            'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Э', 'Ю', 'Я',
-        };
+            Surnames = 1,
+            CallSigns = 2,
+            SponsorsNames = 3,
+        }
 
         public void OnWaiting()
         {
-            Log.Debug($"Total surnames count out of handler: {Plugin.SurnameBase.Count()}", Plugin.PluginItem.Config.Debug);
-            if (Plugin.SurnameBase.Count > 0)
-            {
-                this.surnames = Plugin.SurnameBase;
-                this.surnames.ShuffleList();
-                Log.Debug($"Total surnames count inside handler: {this.surnames.Count()}", Plugin.PluginItem.Config.Debug);
-            }
-
-            Log.Debug($"Total callsigns count out of handler: {Plugin.CallSignsBase.Count()}", Plugin.PluginItem.Config.Debug);
-            if (Plugin.CallSignsBase.Count > 0)
-            {
-                this.callSigns = Plugin.CallSignsBase;
-                this.callSigns.ShuffleList();
-                Log.Debug($"Total callsigns count inside handler: {this.callSigns.Count()}", Plugin.PluginItem.Config.Debug);
-            }
+            this.LoadNames();
         }
 
         public void OnRoundStarted()
         {
+            this.classDPart = UnityEngine.Random.Range(10, 100);
+            this.LoadNames();
             Plugin.PluginItem.NewCoroutine(this.BadgeDisplay());
+        }
 
+        private void LoadNames(List<NameBase> nameBase = null)
+        {
+            nameBase = nameBase ?? new List<NameBase> { NameBase.Surnames, NameBase.CallSigns, NameBase.SponsorsNames };
+            foreach (var item in nameBase)
+            {
+                switch (item)
+                {
+                    case NameBase.Surnames:
+                        Log.Debug($"Total surnames count out of handler: {Plugin.SurnameBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        if (Plugin.SurnameBase.Count > 0)
+                        {
+                            this.surnames = Plugin.SurnameBase;
+                            this.surnames.ShuffleList();
+                            Log.Debug($"Total surnames count inside handler: {this.surnames.Count()}", Plugin.PluginItem.Config.Debug);
+                        }
+
+                        break;
+                    case NameBase.CallSigns:
+                        Log.Debug($"Total callsigns count out of handler: {Plugin.CallSignsBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        if (Plugin.CallSignsBase.Count > 0)
+                        {
+                            this.callSigns = Plugin.CallSignsBase;
+                            this.callSigns.ShuffleList();
+                            Log.Debug($"Total callsigns count inside handler: {this.callSigns.Count()}", Plugin.PluginItem.Config.Debug);
+                        }
+
+                        break;
+                    case NameBase.SponsorsNames:
+                        Log.Debug($"Total sponsors names count out of handler: {Plugin.SponsorsNamesBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        if (Plugin.CallSignsBase.Count > 0)
+                        {
+                            this.sponsorsNames = Plugin.SponsorsNamesBase;
+                            this.sponsorsNames.ShuffleList();
+                            Log.Debug($"Total sponsors names count inside handler: {this.sponsorsNames.Count()}", Plugin.PluginItem.Config.Debug);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private Dictionary<string, int> connectionTextTimer = new Dictionary<string, int> { };
@@ -115,6 +152,11 @@
                     switch (player.Team)
                     {
                         case Team.SCP:
+                            if (player.Role == RoleType.Scp096 || player.Role == RoleType.Scp106 || player.Role == RoleType.Scp079)
+                            {
+                                continue;
+                            }
+
                             display += role.Replace("%role", "[ДАННЫЕ УДАЛЕНЫ]");
                             display = display.Replace("%color", "#990000");
                             break;
@@ -132,54 +174,18 @@
                             {
                                 case RoleType.NtfSergeant:
                                     display += post.Replace("%post", $"Сержант {player.UnitName}");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Сержант {player.UnitName}").Replace("%color", "#0180DA"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Сержант {player.UnitName}").Replace("%color", "#0180DA");
-                                    }
-
                                     display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.NtfCaptain:
                                     display += post.Replace("%post", $"Командир {player.UnitName}");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Командир {player.UnitName}").Replace("%color", "#000080"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Командир {player.UnitName}").Replace("%color", "#000080");
-                                    }
-
                                     display = display.Replace("%color", "#000080");
                                     break;
                                 case RoleType.NtfPrivate:
                                     display += post.Replace("%post", $"Капрал {player.UnitName}");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Капрал {player.UnitName}").Replace("%color", "#8BC5FF"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Капрал {player.UnitName}").Replace("%color", "#8BC5FF");
-                                    }
-
                                     display = display.Replace("%color", "#8BC5FF");
                                     break;
                                 case RoleType.NtfSpecialist:
                                     display += post.Replace("%post", $"Специалист ВУС {player.UnitName}");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Специалист ВУС {player.UnitName}").Replace("%color", "#0180DA"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Специалист ВУС {player.UnitName}").Replace("%color", "#0180DA");
-                                    }
-
                                     display = display.Replace("%color", "#0180DA");
                                     break;
                                 case RoleType.FacilityGuard:
@@ -193,59 +199,22 @@
                             break;
                         case Team.CHI:
                             display += role.Replace("%role", player.DisplayNickname).Replace("РОЛЬ", "ПОЗЫВНОЙ");
-                            string postMessage;
                             switch (player.Role)
                             {
                                 case RoleType.ChaosMarauder:
-                                    postMessage = post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Мародёр Хаоса").Replace("%color", "#274e13");
-                                    }
-
+                                    display += post.Replace("%post", $"Мародёр Хаоса");
                                     display = display.Replace("%color", "#274e13");
                                     break;
                                 case RoleType.ChaosRepressor:
-                                    postMessage =  post.Replace("%post", $"Репрессор Хаоса");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Репрессор Хаоса").Replace("%color", "#274e13"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Репрессор Хаоса").Replace("%color", "#274e13");
-                                    }
-
+                                    display += post.Replace("%post", $"Репрессор Хаоса");
                                     display = display.Replace("%color", "#274e13");
                                     break;
                                 case RoleType.ChaosRifleman:
-                                    postMessage =  post.Replace("%post", $"Стрелок Хаоса");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Стрелок Хаоса").Replace("%color", "#38761d"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Стрелок Хаоса").Replace("%color", "#38761d");
-                                    }
-
+                                    display += post.Replace("%post", $"Стрелок Хаоса");
                                     display = display.Replace("%color", "#38761d");
                                     break;
                                 case RoleType.ChaosConscript:
-                                    postMessage =  post.Replace("%post", $"Новобранец Хаоса");
-                                    if (!this.militaryRole.ContainsKey(player.UserId))
-                                    {
-                                        this.militaryRole.Add(player.UserId, post.Replace("%post", $"Новобранец Хаоса").Replace("%color", "#6aa84f"));
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole[player.UserId] = post.Replace("%post", $"Новобранец Хаоса").Replace("%color", "#6aa84f");
-                                    }
-
+                                    display += post.Replace("%post", $"Новобранец Хаоса");
                                     display = display.Replace("%color", "#6aa84f");
                                     break;
                                 default:
@@ -286,29 +255,8 @@
             }
 
             this.connectionTextTimer.Clear();
+            this.classDperRound.Clear();
         }
-
-        //public void OnDying(DyingEventArgs ev)
-        //{
-        //    if (!ev.IsAllowed)
-        //    {
-        //        return;
-        //    }
-
-        //    if (ev.Killer.Role == RoleType.Scp049)
-        //    {
-        //        Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(ev.Target));
-        //    }
-
-        //    if (this.connectionTextTimer.TryGetValue(ev.Target.UserId, out int seconds))
-        //    {
-        //        this.connectionTextTimer[ev.Target.UserId] = 7;
-        //    }
-        //    else
-        //    {
-        //        this.connectionTextTimer.Add(ev.Target.UserId, 7);
-        //    }
-        //}
 
         public IEnumerator<float> NameChangeDelay(Player player)
         {
@@ -332,34 +280,22 @@
                 player.CustomInfo = string.Empty;
                 player.DisplayNickname = string.Empty;
                 this.militaryRole.Remove(player.UserId);
+
                 yield break;
             }
 
-            if (player.CustomInfo != string.Empty || player.CustomInfo != null)
-            {
-                player.CustomInfo = customInfo;
-            }
-            else if (this.militaryRole.TryGetValue(player.UserId, out string cInfo))
+            if (this.militaryRole.TryGetValue(player.UserId, out string cInfo))
             {
                 player.CustomInfo = cInfo;
                 this.militaryRole.Remove(player.UserId);
             }
+            else
+            {
+                player.CustomInfo = customInfo;
+            }
 
             player.DisplayNickname = displayNickname;
             yield break;
-        }
-
-        public void OnSpawning(SpawningEventArgs ev)
-        {
-            Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.RoleType));
-            if (this.connectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
-            {
-                this.connectionTextTimer[ev.Player.UserId] = 7;
-            }
-            else
-            {
-                this.connectionTextTimer.Add(ev.Player.UserId, 7);
-            }
         }
 
         public void OnChangingRole(ChangingRoleEventArgs ev)
@@ -381,26 +317,50 @@
             if (Plugin.PluginItem.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
                 string selectedname;
-
+                this.militaryRole.Remove(player.UserId);
                 if (player.Team != Team.SCP)
                 {
                     switch (role)
                     {
                         case RoleType.ClassD:
-                            player.DisplayNickname = "D-" + this.rnd.Next(10000, 99999).ToString();
-                            break;
-                        case RoleType.Scientist:
-                            if (this.surnames.Count > 0)
+                            if (this.classDperRound.Count > 800)
                             {
-                                selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
-                                this.surnames.Remove(selectedname);
-                            }
-                            else
-                            {
-                                selectedname = player.Nickname;
+                                this.classDPart++;
+                                this.classDperRound.Clear();
                             }
 
-                            player.DisplayNickname = $"д-р {selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Count)]}. {this.names[UnityEngine.Random.Range(0, this.names.Count)]}.";
+                            string number;
+                            for (; ;)
+                            {
+                                number = $"{UnityEngine.Random.Range(0, 1000)}";
+                                if (UnityEngine.Random.Range(0, 100) < 90)
+                                {
+                                    number = "D-" + this.classDPart + string.Join(string.Empty, new string('0', 3 - number.Length), number);
+                                }
+                                else
+                                {
+                                    number = "D-" + this.rnd.Next(10000, 99999).ToString();
+                                }
+
+                                if (!this.classDperRound.Contains(number))
+                                {
+                                    break;
+                                }
+                            }
+
+                            this.classDperRound.Add(number);
+                            player.DisplayNickname = number;
+                            break;
+                        case RoleType.Scientist:
+                            if (this.surnames.Count <= 0)
+                            {
+                                this.LoadNames(new List<NameBase> { NameBase.Surnames, });
+                            }
+
+                            selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
+                            this.surnames.Remove(selectedname);
+
+                            player.DisplayNickname = $"д-р {selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}. {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
 
                             if (player.HasItem(ItemType.KeycardFacilityManager))
                             {
@@ -422,17 +382,15 @@
                             break;
 
                         case RoleType.FacilityGuard:
-                            if (this.surnames.Count > 0)
+                            if (this.surnames.Count <= 0)
                             {
-                                selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
-                                this.surnames.Remove(selectedname);
-                            }
-                            else
-                            {
-                                selectedname = player.Nickname;
+                                this.LoadNames(new List<NameBase> { NameBase.Surnames, });
                             }
 
-                            player.DisplayNickname = $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Count)]}. {this.names[UnityEngine.Random.Range(0, this.names.Count)]}.";
+                            selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
+                            this.surnames.Remove(selectedname);
+
+                            player.DisplayNickname = $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}. {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
 
                             if (player.HasItem(ItemType.KeycardNTFCommander))
                             {
@@ -456,14 +414,68 @@
                         default:
                             if (player.Team == Team.CHI || player.Team == Team.MTF)
                             {
-                                if (this.callSigns.Count > 0)
+                                if ((player.Role == RoleType.NtfCaptain || player.Role == RoleType.ChaosMarauder) && this.sponsorsNames.Count > 0)
                                 {
-                                    selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
-                                    this.callSigns.Remove(selectedname);
+                                    selectedname = this.sponsorsNames[this.rnd.Next(this.sponsorsNames.Count)];
+                                    this.sponsorsNames.Remove(selectedname);
                                 }
                                 else
                                 {
-                                    selectedname = player.Nickname;
+                                    if (this.callSigns.Count <= 0)
+                                    {
+                                        this.LoadNames(new List<NameBase> { NameBase.CallSigns, });
+                                    }
+
+                                    selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
+                                    this.callSigns.Remove(selectedname);
+                                }
+
+                                string roleName = "<color=%color>%post</color>";
+                                switch (player.Role)
+                                {
+                                    case RoleType.NtfSergeant:
+                                        roleName += roleName.Replace("%post", $"Сержант {player.UnitName}");
+                                        roleName = roleName.Replace("%color", "#0180DA");
+                                        break;
+                                    case RoleType.NtfCaptain:
+                                        roleName += roleName.Replace("%post", $"Командир {player.UnitName}");
+                                        roleName = roleName.Replace("%color", "#000080");
+                                        break;
+                                    case RoleType.NtfPrivate:
+                                        roleName += roleName.Replace("%post", $"Капрал {player.UnitName}");
+                                        roleName = roleName.Replace("%color", "#8BC5FF");
+                                        break;
+                                    case RoleType.NtfSpecialist:
+                                        roleName += roleName.Replace("%post", $"Специалист ВУС {player.UnitName}");
+                                        roleName = roleName.Replace("%color", "#0180DA");
+                                        break;
+                                    case RoleType.ChaosMarauder:
+                                        roleName += roleName.Replace("%post", $"Мародёр Хаоса");
+                                        roleName = roleName.Replace("%color", "#274e13");
+                                        break;
+                                    case RoleType.ChaosRepressor:
+                                        roleName += roleName.Replace("%post", $"Репрессор Хаоса");
+                                        roleName = roleName.Replace("%color", "#274e13");
+                                        break;
+                                    case RoleType.ChaosRifleman:
+                                        roleName += roleName.Replace("%post", $"Стрелок Хаоса");
+                                        roleName = roleName.Replace("%color", "#38761d");
+                                        break;
+                                    case RoleType.ChaosConscript:
+                                        roleName += roleName.Replace("%post", $"Новобранец Хаоса");
+                                        roleName = roleName.Replace("%color", "#6aa84f");
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                if (this.militaryRole.TryGetValue(player.UserId, out string prevRole))
+                                {
+                                    this.militaryRole[player.UserId] = roleName;
+                                }
+                                else
+                                {
+                                    this.militaryRole.Add(player.UserId, roleName);
                                 }
 
                                 player.DisplayNickname = $"'{selectedname}'";

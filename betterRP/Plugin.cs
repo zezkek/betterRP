@@ -25,7 +25,7 @@ namespace BetterRP
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(0, 3, 9);
+        public override Version Version => new Version(0, 5, 0);
 
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
 
@@ -36,6 +36,8 @@ namespace BetterRP
         public static List<string> SurnameBase = new List<string> { };
 
         public static List<string> CallSignsBase = new List<string> { };
+
+        public static List<string> SponsorsNamesBase = new List<string> { };
 
         public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
 
@@ -65,8 +67,6 @@ namespace BetterRP
             this.startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
-            //PlayerEv.Dying += this.playerNames.OnDying;
-            PlayerEv.Spawning += this.playerNames.OnSpawning;
             PlayerEv.Spawning += this.playerResize.OnSpawning;
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
@@ -90,9 +90,8 @@ namespace BetterRP
             {
                 MEC.Timing.KillCoroutines(this.coroutines.ToArray());
             }
+
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
-            //PlayerEv.Dying -= this.playerNames.OnDying;
-            PlayerEv.Spawning -= this.playerNames.OnSpawning;
             PlayerEv.Spawning -= this.playerResize.OnSpawning;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
@@ -110,6 +109,7 @@ namespace BetterRP
             this.startsBlackout = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
+            SponsorsNamesBase = new List<string> { };
             base.OnDisabled();
 
             if (this.Config.IsEnabled)
@@ -132,6 +132,7 @@ namespace BetterRP
                 Log.Info("Creating path for names folder...");
                 string surnameFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/Surnames.txt");
                 string callSignsFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/CallSigns.txt");
+                string sponsorsNamesFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/SponsorsNames.txt");
 
                 Log.Debug($"{surnameFilePath}");
                 if (!File.Exists(surnameFilePath))
@@ -157,6 +158,19 @@ namespace BetterRP
                     Log.Info("File with callsigns has been found. Reading...");
                     CallSignsBase = File.ReadAllLines(callSignsFilePath).ToList();
                     Log.Info($"Total callsigns count: {CallSignsBase.Count()}");
+                }
+
+                Log.Debug($"{sponsorsNamesFilePath}");
+                if (!File.Exists(sponsorsNamesFilePath))
+                {
+                    Log.Warn("File with callsigns found. Creating...");
+                    File.WriteAllText(sponsorsNamesFilePath, string.Empty);
+                }
+                else
+                {
+                    Log.Info("File with callsigns has been found. Reading...");
+                    SponsorsNamesBase = File.ReadAllLines(sponsorsNamesFilePath).ToList();
+                    Log.Info($"Total callsigns count: {SponsorsNamesBase.Count()}");
                 }
             }
             catch (Exception e)
