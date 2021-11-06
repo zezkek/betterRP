@@ -39,7 +39,7 @@
 
             if (player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && player.Role != RoleType.None)
             {
-                player.Scale = new Vector3(UnityEngine.Random.Range(0.9f, 1.1f), UnityEngine.Random.Range(0.9f, 1.1f), 1);
+                player.Scale = new Vector3(UnityEngine.Random.Range(0.95f, 1.05f), UnityEngine.Random.Range(0.95f, 1.05f), 1);
             }
             else if (player.IsAlive)
             {

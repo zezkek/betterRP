@@ -25,7 +25,7 @@ namespace BetterRP
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(0, 5, 0);
+        public override Version Version => new Version(1, 0, 0);
 
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
 

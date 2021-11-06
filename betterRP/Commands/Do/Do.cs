@@ -62,7 +62,17 @@
             switch (arguments.At(0))
             {
                 default:
-                    var msg = $"{playerRequester.Nickname}: " + string.Join(" ", arguments.Segment(0));
+                    string msg = string.Empty;
+                    if (playerRequester.DisplayNickname != null && playerRequester.DisplayNickname != string.Empty)
+                    {
+                        msg = $"{playerRequester.DisplayNickname}";
+                    }
+                    else
+                    {
+                        msg = $"{playerRequester.Nickname}";
+                    }
+
+                    msg += ": " + string.Join(" ", arguments.Segment(0));
                     msg = "Действие " + Regex.Replace(msg, "<[^>]*>", string.Empty);
 
                     if (msg.Length - 14 > 100)

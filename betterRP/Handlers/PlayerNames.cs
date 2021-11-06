@@ -143,6 +143,10 @@
                             this.connectionTextTimer[player.UserId]--;
                             display += name.Replace("%name", player.Nickname);
                         }
+                        else
+                        {
+                            display += "\n";
+                        }
                     }
                     else
                     {
@@ -360,7 +364,7 @@
                             selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
                             this.surnames.Remove(selectedname);
 
-                            player.DisplayNickname = $"д-р {selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}. {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
+                            player.DisplayNickname = $"д-р {selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
 
                             if (player.HasItem(ItemType.KeycardFacilityManager))
                             {
@@ -390,7 +394,7 @@
                             selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
                             this.surnames.Remove(selectedname);
 
-                            player.DisplayNickname = $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}. {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
+                            player.DisplayNickname = $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
 
                             if (player.HasItem(ItemType.KeycardNTFCommander))
                             {
