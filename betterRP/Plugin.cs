@@ -39,13 +39,14 @@ namespace BetterRP
 
         public static List<string> SponsorsNamesBase = new List<string> { };
 
-        public static Plugin PluginItem => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
+        public static Plugin Instance => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
 
         private PlayerNames playerNames;
 
         private PlayerResize playerResize;
         private GrenadesAdditionalEffects grenadesAdditionalEffects;
         private StartsBlackout startsBlackout;
+        private TeslaDisable teslaDisable;
 #if PlayerLeavle
         private PlayerLeave replaceSCP;
 #endif
@@ -61,6 +62,7 @@ namespace BetterRP
             this.playerNames = new PlayerNames();
             this.playerResize = new PlayerResize();
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
+            this.teslaDisable = new TeslaDisable(this);
 #if PlayerLeave
             this.replaceSCP = new PlayerLeave();
 #endif
@@ -76,8 +78,11 @@ namespace BetterRP
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted += this.playerNames.OnRoundStarted;
+            SvEv.RoundStarted += BetterRP.Commands.TOC.TOC.OnRoundStarted;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnHurting;
+
+            PlayerEv.TriggeringTesla += this.teslaDisable.OnTriggeringTesla;
             this.LoadNames();
             base.OnEnabled();
         }
@@ -100,13 +105,16 @@ namespace BetterRP
 #endif
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
             SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
+            SvEv.RoundStarted -= BetterRP.Commands.TOC.TOC.OnRoundStarted;
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnHurting;
+            PlayerEv.TriggeringTesla -= this.teslaDisable.OnTriggeringTesla;
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
+            this.teslaDisable = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
             SponsorsNamesBase = new List<string> { };
@@ -123,16 +131,16 @@ namespace BetterRP
         {
             try
             {
-                if (!Directory.Exists(Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/")))
+                if (!Directory.Exists(Path.Combine(Instance.Config.ItemConfigFolder, "Names/")))
                 {
                     Log.Warn("Folder with names files not found. Creating...");
-                    Directory.CreateDirectory(PluginItem.Config.ItemConfigFolder);
+                    Directory.CreateDirectory(Instance.Config.ItemConfigFolder);
                 }
 
                 Log.Info("Creating path for names folder...");
-                string surnameFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/Surnames.txt");
-                string callSignsFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/CallSigns.txt");
-                string sponsorsNamesFilePath = Path.Combine(PluginItem.Config.ItemConfigFolder, "Names/SponsorsNames.txt");
+                string surnameFilePath = Path.Combine(Instance.Config.ItemConfigFolder, "Names/Surnames.txt");
+                string callSignsFilePath = Path.Combine(Instance.Config.ItemConfigFolder, "Names/CallSigns.txt");
+                string sponsorsNamesFilePath = Path.Combine(Instance.Config.ItemConfigFolder, "Names/SponsorsNames.txt");
 
                 Log.Debug($"{surnameFilePath}");
                 if (!File.Exists(surnameFilePath))

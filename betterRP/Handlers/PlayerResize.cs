@@ -16,12 +16,12 @@
     {
         public void OnSpawning(SpawningEventArgs ev)
         {
-            Plugin.PluginItem.NewCoroutine(this.ChangeSizeDelay(ev.Player));
+            Plugin.Instance.NewCoroutine(this.ChangeSizeDelay(ev.Player));
         }
 
         public void OnChangingRoleEventArgs(ChangingRoleEventArgs ev)
         {
-            Plugin.PluginItem.NewCoroutine(this.ChangeSizeDelay(ev.Player));
+            Plugin.Instance.NewCoroutine(this.ChangeSizeDelay(ev.Player));
         }
 
         public void OnDying(DyingEventArgs ev)
@@ -37,9 +37,18 @@
                 yield break;
             }
 
-            if (player.IsHuman && Plugin.PluginItem.Config.PlayerNamesEnabled && player.Role != RoleType.None)
+            if (player.IsHuman && Plugin.Instance.Config.PlayerNamesEnabled && player.Role != RoleType.None)
             {
-                player.Scale = new Vector3(UnityEngine.Random.Range(0.95f, 1.05f), UnityEngine.Random.Range(0.95f, 1.05f), 1);
+                float hight = UnityEngine.Random.Range(0.95f, 1.05f);
+                if (hight > 1)
+                {
+                    player.Scale = new Vector3(UnityEngine.Random.Range(1f, 1.05f), hight, 1);
+                }
+                else
+                {
+                    player.Scale = new Vector3(UnityEngine.Random.Range(0.95f, 1.05f), hight, 1);
+                }
+
             }
             else if (player.IsAlive)
             {

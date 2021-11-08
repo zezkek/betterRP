@@ -40,7 +40,7 @@
         {
             this.classDPart = UnityEngine.Random.Range(10, 100);
             this.LoadNames();
-            Plugin.PluginItem.NewCoroutine(this.BadgeDisplay());
+            Plugin.Instance.NewCoroutine(this.BadgeDisplay());
         }
 
         private void LoadNames(List<NameBase> nameBase = null)
@@ -51,32 +51,32 @@
                 switch (item)
                 {
                     case NameBase.Surnames:
-                        Log.Debug($"Total surnames count out of handler: {Plugin.SurnameBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        Log.Debug($"Total surnames count out of handler: {Plugin.SurnameBase.Count()}", Plugin.Instance.Config.Debug);
                         if (Plugin.SurnameBase.Count > 0)
                         {
                             this.surnames = Plugin.SurnameBase;
                             this.surnames.ShuffleList();
-                            Log.Debug($"Total surnames count inside handler: {this.surnames.Count()}", Plugin.PluginItem.Config.Debug);
+                            Log.Debug($"Total surnames count inside handler: {this.surnames.Count()}", Plugin.Instance.Config.Debug);
                         }
 
                         break;
                     case NameBase.CallSigns:
-                        Log.Debug($"Total callsigns count out of handler: {Plugin.CallSignsBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        Log.Debug($"Total callsigns count out of handler: {Plugin.CallSignsBase.Count()}", Plugin.Instance.Config.Debug);
                         if (Plugin.CallSignsBase.Count > 0)
                         {
                             this.callSigns = Plugin.CallSignsBase;
                             this.callSigns.ShuffleList();
-                            Log.Debug($"Total callsigns count inside handler: {this.callSigns.Count()}", Plugin.PluginItem.Config.Debug);
+                            Log.Debug($"Total callsigns count inside handler: {this.callSigns.Count()}", Plugin.Instance.Config.Debug);
                         }
 
                         break;
                     case NameBase.SponsorsNames:
-                        Log.Debug($"Total sponsors names count out of handler: {Plugin.SponsorsNamesBase.Count()}", Plugin.PluginItem.Config.Debug);
+                        Log.Debug($"Total sponsors names count out of handler: {Plugin.SponsorsNamesBase.Count()}", Plugin.Instance.Config.Debug);
                         if (Plugin.CallSignsBase.Count > 0)
                         {
                             this.sponsorsNames = Plugin.SponsorsNamesBase;
                             this.sponsorsNames.ShuffleList();
-                            Log.Debug($"Total sponsors names count inside handler: {this.sponsorsNames.Count()}", Plugin.PluginItem.Config.Debug);
+                            Log.Debug($"Total sponsors names count inside handler: {this.sponsorsNames.Count()}", Plugin.Instance.Config.Debug);
                         }
 
                         break;
@@ -142,6 +142,7 @@
                         {
                             this.connectionTextTimer[player.UserId]--;
                             display += name.Replace("%name", player.Nickname);
+                            continue;
                         }
                         else
                         {
@@ -156,7 +157,7 @@
                     switch (player.Team)
                     {
                         case Team.SCP:
-                            if (player.Role == RoleType.Scp096 || player.Role == RoleType.Scp106 || player.Role == RoleType.Scp079)
+                            if (player.Role == RoleType.Scp096 || player.Role == RoleType.Scp079)
                             {
                                 continue;
                             }
@@ -304,7 +305,7 @@
 
         public void OnChangingRole(ChangingRoleEventArgs ev)
         {
-            Plugin.PluginItem.NewCoroutine(this.SetName(ev.Player, ev.NewRole));
+            Plugin.Instance.NewCoroutine(this.SetName(ev.Player, ev.NewRole));
             if (this.connectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
             {
                 this.connectionTextTimer[ev.Player.UserId] = 7;
@@ -318,7 +319,7 @@
         private IEnumerator<float> SetName(Player player, RoleType role)
         {
             yield return MEC.Timing.WaitForSeconds(0.1f);
-            if (Plugin.PluginItem.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
+            if (Plugin.Instance.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
                 string selectedname;
                 this.militaryRole.Remove(player.UserId);
@@ -487,13 +488,13 @@
                             }
                             else
                             {
-                                Plugin.PluginItem.NewCoroutine(this.NameChangeDelay(player));
+                                Plugin.Instance.NewCoroutine(this.NameChangeDelay(player));
                             }
 
                             break;
                     }
 
-                    Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.PluginItem.Config.Debug);
+                    Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.Instance.Config.Debug);
                 }
                 else
                 {

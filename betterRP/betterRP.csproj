@@ -141,12 +141,14 @@
     <Compile Include="Commands\CommandMethods.cs" />
     <Compile Include="Commands\Cuff\Cuff.cs" />
     <Compile Include="Commands\Do\Do.cs" />
+    <Compile Include="Commands\TOC\TOC.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Handlers\GrenadesAdditionalEffects.cs" />
     <Compile Include="Handlers\PlayerNames.cs" />
     <Compile Include="Handlers\PlayerResize.cs" />
     <Compile Include="Handlers\StartsBlackout.cs" />
+    <Compile Include="Handlers\TeslaDisable.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
