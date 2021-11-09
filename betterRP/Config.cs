@@ -25,13 +25,13 @@
         public float BlackoutDelay { get; set; } = 15f;
 
         [Description("TOC CONFIG THERE. Evacuation Cooldown")]
-        public int CooldownEv { get; set; } = 300;
+        public int CooldownEv { get; set; } = 150;
 
         [Description("Cooldown of support")]
         public int CooldownSup { get; set; } = 300;
 
         [Description("Time to wait for support")]
-        public float WaitForSupport { get; set; } = 60;
+        public float TimeInTheWay { get; set; } = 60;
 
         [Description("Max distance between SCP and player while containming")]
         public float Distance { get; set; } = 10f;
@@ -52,7 +52,7 @@
             ItemType.KeycardFacilityManager, ItemType.KeycardNTFCommander,
             ItemType.KeycardO5, ItemType.MicroHID,
             ItemType.SCP018, ItemType.SCP207,
-            ItemType.SCP207, ItemType.SCP500,
+            ItemType.SCP268, ItemType.SCP500,
         };
 
         [Description("Items that chaos can evacuate")]

@@ -16,6 +16,7 @@ namespace BetterRP
     using MapEv = Exiled.Events.Handlers.Map;
     using PlayerEv = Exiled.Events.Handlers.Player;
     using SvEv = Exiled.Events.Handlers.Server;
+    using WarheadEv = Exiled.Events.Handlers.Warhead;
 
     public class Plugin : Plugin<Config>
     {
@@ -58,6 +59,7 @@ namespace BetterRP
                 Log.Debug("Better RP is disabled via configs. It will not be loaded.");
                 return;
             }
+
             // commandMethods = new CommandMethods(this);
             this.playerNames = new PlayerNames();
             this.playerResize = new PlayerResize();
@@ -81,8 +83,11 @@ namespace BetterRP
             SvEv.RoundStarted += BetterRP.Commands.TOC.TOC.OnRoundStarted;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnHurting;
-
             PlayerEv.TriggeringTesla += this.teslaDisable.OnTriggeringTesla;
+
+            SvEv.RespawningTeam += BetterRP.Commands.TOC.TOC.OnTeamSpawn;
+            WarheadEv.Detonated += BetterRP.Commands.TOC.TOC.OnWarheadDetonated;
+
             this.LoadNames();
             base.OnEnabled();
         }
@@ -110,6 +115,10 @@ namespace BetterRP
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnHurting;
             PlayerEv.TriggeringTesla -= this.teslaDisable.OnTriggeringTesla;
+
+            SvEv.RespawningTeam -= BetterRP.Commands.TOC.TOC.OnTeamSpawn;
+            WarheadEv.Detonated -= BetterRP.Commands.TOC.TOC.OnWarheadDetonated;
+
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
