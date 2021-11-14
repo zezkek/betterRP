@@ -1,4 +1,4 @@
-﻿namespace RolePlayNames.Handlers
+﻿namespace BetterRP.API
 {
     using System;
     using System.Collections.Generic;
@@ -12,24 +12,30 @@
     using Mirror;
     using UnityEngine;
 
+    /// <summary>
+    /// Sets realistic human scale.
+    /// </summary>
     public class PlayerResize
     {
-        public void OnSpawning(SpawningEventArgs ev)
-        {
-            Plugin.Instance.NewCoroutine(this.ChangeSizeDelay(ev.Player));
-        }
-
+        /// <summary>
+        /// Needed to call ChangeSizeDelay.
+        /// </summary>
+        /// <param name="ev">ChangingRoleEventArgs.</param>
         public void OnChangingRoleEventArgs(ChangingRoleEventArgs ev)
         {
-            Plugin.Instance.NewCoroutine(this.ChangeSizeDelay(ev.Player));
+            Plugin.Instance.NewCoroutine(this.ChangeSize(ev.Player));
         }
 
+        /// <summary>
+        /// Needed to call ChangeSizeDelay.
+        /// </summary>
+        /// <param name="ev">ChangingRoleEventArgs.</param>
         public void OnDying(DyingEventArgs ev)
         {
             ev.Target.Scale = new Vector3(1, 1, 1);
         }
 
-        private IEnumerator<float> ChangeSizeDelay(Player player)
+        private IEnumerator<float> ChangeSize(Player player)
         {
             yield return MEC.Timing.WaitForSeconds(0.1f);
             if (player == null)
@@ -48,7 +54,6 @@
                 {
                     player.Scale = new Vector3(UnityEngine.Random.Range(0.95f, 1.05f), hight, 1);
                 }
-
             }
             else if (player.IsAlive)
             {

@@ -139,17 +139,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CommandMethods.cs" />
+    <Compile Include="Commands\Cuff\Cuff.cs" />
     <Compile Include="Commands\Do\Do.cs" />
     <Compile Include="Commands\TOC\TOC.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Handlers\GrenadesAdditionalEffects.cs" />
-    <Compile Include="Handlers\PlayerNames.cs" />
-    <Compile Include="Handlers\PlayerResize.cs" />
-    <Compile Include="Handlers\StartsBlackout.cs" />
-    <Compile Include="Handlers\TeslaDisable.cs" />
+    <Compile Include="API\GrenadesAdditionalEffects.cs" />
+    <Compile Include="API\PlayerNames.cs" />
+    <Compile Include="API\PlayerResize.cs" />
+    <Compile Include="API\StartsBlackout.cs" />
+    <Compile Include="API\TeslaDisable.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserInterface\UserInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

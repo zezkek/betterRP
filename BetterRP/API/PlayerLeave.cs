@@ -1,4 +1,4 @@
-﻿namespace BetterRP
+﻿namespace BetterRP.API
 {
     using System;
     using System.Collections.Generic;

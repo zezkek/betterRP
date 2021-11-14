@@ -1,4 +1,4 @@
-﻿namespace BetterRP
+﻿namespace BetterRP.API
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +14,9 @@
     using Mirror;
     using UnityEngine;
 
+    /// <summary>
+    /// Gives more realistic explosion effects for players.
+    /// </summary>
     public class GrenadesAdditionalEffects
     {
         private readonly Plugin plugin;
@@ -27,6 +30,10 @@
             this.plugin = plugin;
         }
 
+        /// <summary>
+        /// If 939 is concussed, it can't hurt any player.
+        /// </summary>
+        /// <param name="ev">HurtingEventArgs.</param>
         public void OnHurting(HurtingEventArgs ev)
         {
             if (ev.Attacker.Role.Is939() && ev.Attacker.GetEffect(EffectType.Ensnared).Intensity > 0 && ev.Attacker != ev.Target)
@@ -35,14 +42,16 @@
             }
         }
 
+        /// <summary>
+        /// Affects players, which were in the radius of grenade explosion.
+        /// </summary>
+        /// <param name="ev">ExplodingGrenadeEventArgs.</param>
         public void OnExplodingGrenade(ExplodingGrenadeEventArgs ev)
         {
             if (this.plugin.Config.Debug)
             {
                 Log.Debug("Event OnFlash has been taken");
-#pragma warning disable CS0618 // Type or member is obsolete
                 Log.Debug($"Count of targets: {ev.TargetsToAffect.Count}");
-#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             foreach (Player player in Player.List)

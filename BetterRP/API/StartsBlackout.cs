@@ -1,4 +1,4 @@
-﻿namespace BetterRP
+﻿namespace BetterRP.API
 {
     using System;
     using System.Collections.Generic;
@@ -19,7 +19,7 @@
     {
         private readonly Plugin plugin;
 
-        Dictionary<Room, float> defaultBright = new Dictionary<Room, float> { };
+        private Dictionary<Room, float> defaultBright = new Dictionary<Room, float> { };
 
         public StartsBlackout(Plugin plugin)
         {

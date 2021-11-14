@@ -1,4 +1,4 @@
-﻿#define Full
+﻿#define TOC
 namespace BetterRP
 {
     using System;
@@ -7,11 +7,9 @@ namespace BetterRP
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using BetterRP.API;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
-#if Full
-    using RolePlayNames.Handlers;
-#endif
     using UnityEngine;
     using MapEv = Exiled.Events.Handlers.Map;
     using PlayerEv = Exiled.Events.Handlers.Player;
@@ -20,37 +18,39 @@ namespace BetterRP
 
     public class Plugin : Plugin<Config>
     {
+        private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
+
+        private PlayerNames playerNames;
+        private PlayerResize playerResize;
+        private GrenadesAdditionalEffects grenadesAdditionalEffects;
+        private StartsBlackout startsBlackout;
+        private TeslaDisable teslaDisable;
+        private UserInterface.UserInterface userInterface;
+
+        public static List<string> SurnameBase { get; set; } = new List<string> { };
+
+        public static List<string> CallSignsBase { get; set; } = new List<string> { };
+
+        public static List<string> SponsorsNamesBase { get; set; } = new List<string> { };
+
+        public static Plugin Instance => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
+
         public override string Name { get; } = "BetterRP";
 
         public override string Author { get; } = ".fkn_goose & Mydak";
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(1, 1, 0);
-
-        private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
+        public override Version Version => new Version(1, 3, 0);
 
         public void AddCoroutine(MEC.CoroutineHandle coroutineHandle) => this.coroutines.Add(coroutineHandle);
 
         public void NewCoroutine(IEnumerator<float> coroutine, MEC.Segment segment = MEC.Segment.Update) => this.coroutines.Add(MEC.Timing.RunCoroutine(coroutine, segment));
 
-        public static List<string> SurnameBase = new List<string> { };
-
-        public static List<string> CallSignsBase = new List<string> { };
-
-        public static List<string> SponsorsNamesBase = new List<string> { };
-
-        public static Plugin Instance => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
-
-        private PlayerNames playerNames;
-
-        private PlayerResize playerResize;
-        private GrenadesAdditionalEffects grenadesAdditionalEffects;
-        private StartsBlackout startsBlackout;
-        private TeslaDisable teslaDisable;
 #if PlayerLeavle
         private PlayerLeave replaceSCP;
 #endif
+
         /// <inheritdoc/>
         public override void OnEnabled()
         {
@@ -65,13 +65,14 @@ namespace BetterRP
             this.playerResize = new PlayerResize();
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
             this.teslaDisable = new TeslaDisable(this);
+            this.userInterface = new UserInterface.UserInterface();
 #if PlayerLeave
             this.replaceSCP = new PlayerLeave();
 #endif
             this.startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
-            PlayerEv.Spawning += this.playerResize.OnSpawning;
+            PlayerEv.Spawning += this.playerNames.OnSpawning;
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
 #if PlayerLeave
@@ -79,14 +80,15 @@ namespace BetterRP
 #endif
             SvEv.WaitingForPlayers += this.playerNames.OnWaiting;
             SvEv.RoundStarted += this.startsBlackout.OnRoundStarted;
-            SvEv.RoundStarted += this.playerNames.OnRoundStarted;
-            SvEv.RoundStarted += BetterRP.Commands.TOC.TOC.OnRoundStarted;
+            SvEv.RoundStarted += this.userInterface.OnRoundStarted;
             MapEv.ExplodingGrenade += this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting += this.grenadesAdditionalEffects.OnHurting;
             PlayerEv.TriggeringTesla += this.teslaDisable.OnTriggeringTesla;
-
+#if TOC
+            SvEv.RoundStarted += BetterRP.Commands.TOC.TOC.OnRoundStarted;
             SvEv.RespawningTeam += BetterRP.Commands.TOC.TOC.OnTeamSpawn;
             WarheadEv.Detonated += BetterRP.Commands.TOC.TOC.OnWarheadDetonated;
+#endif
 
             this.LoadNames();
             base.OnEnabled();
@@ -102,28 +104,32 @@ namespace BetterRP
             }
 
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
-            PlayerEv.Spawning -= this.playerResize.OnSpawning;
+            PlayerEv.Spawning -= this.playerNames.OnSpawning;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
 #if PlayerLeave
             PlayerEv.Left -= this.replaceSCP.OnDisconnect;
 #endif
             SvEv.RoundStarted -= this.startsBlackout.OnRoundStarted;
-            SvEv.RoundStarted -= this.playerNames.OnRoundStarted;
-            SvEv.RoundStarted -= BetterRP.Commands.TOC.TOC.OnRoundStarted;
+            SvEv.RoundStarted -= this.userInterface.OnRoundStarted;
+
             SvEv.WaitingForPlayers -= this.playerNames.OnWaiting;
             MapEv.ExplodingGrenade -= this.grenadesAdditionalEffects.OnExplodingGrenade;
             PlayerEv.Hurting -= this.grenadesAdditionalEffects.OnHurting;
             PlayerEv.TriggeringTesla -= this.teslaDisable.OnTriggeringTesla;
 
+#if TOC
+            SvEv.RoundStarted -= BetterRP.Commands.TOC.TOC.OnRoundStarted;
             SvEv.RespawningTeam -= BetterRP.Commands.TOC.TOC.OnTeamSpawn;
             WarheadEv.Detonated -= BetterRP.Commands.TOC.TOC.OnWarheadDetonated;
+#endif
 
             this.playerNames = null;
             this.playerResize = null;
             this.grenadesAdditionalEffects = null;
             this.startsBlackout = null;
             this.teslaDisable = null;
+            this.userInterface = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
             SponsorsNamesBase = new List<string> { };

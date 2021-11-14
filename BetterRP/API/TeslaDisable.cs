@@ -1,4 +1,4 @@
-﻿namespace BetterRP
+﻿namespace BetterRP.API
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +14,9 @@
     using Mirror;
     using UnityEngine;
 
+    /// <summary>
+    /// Prevents all teslas to hurt person, which has specific item.
+    /// </summary>
     public class TeslaDisable
     {
         private readonly Plugin plugin;
@@ -27,6 +30,10 @@
             this.plugin = plugin;
         }
 
+        /// <summary>
+        /// Allows or not a tesla to work, if any player has started to trigger it.
+        /// </summary>
+        /// <param name="ev">TriggeringTeslaEventArgs.</param>
         public void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
         {
             if (!Plugin.Instance.Config.IsCardDisbaleTesla)

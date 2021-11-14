@@ -62,29 +62,30 @@
             switch (arguments.At(0))
             {
                 default:
-                    string msg = string.Empty;
+                    string msgAuthorDisplayNickname = string.Empty;
+                    string msgAdminInfo = $"ID: {playerRequester.Id} ИМЯ: {playerRequester.Nickname} РОЛЬ: {playerRequester.Role}";
                     if (playerRequester.DisplayNickname != null && playerRequester.DisplayNickname != string.Empty)
                     {
-                        msg = $"{playerRequester.DisplayNickname}";
+                        msgAuthorDisplayNickname = playerRequester.DisplayNickname;
+                        msgAdminInfo += $"РП-ИМЯ: \"{playerRequester.Nickname}\"";
                     }
                     else
                     {
-                        msg = $"{playerRequester.Nickname}";
+                        msgAuthorDisplayNickname = playerRequester.Nickname;
                     }
 
-                    msg += ": " + string.Join(" ", arguments.Segment(0));
-                    msg = "Действие " + Regex.Replace(msg, "<[^>]*>", string.Empty);
+                    string msg = Regex.Replace(string.Join(" ", arguments.Segment(0)), "<[^>]*>", string.Empty);
 
-                    if (msg.Length - 14 > 100)
+                    if (msg.Length > 100)
                     {
                         response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ИСПОЛЬЗОВАНИЕ КОМАНДЫ: ПРЕВЫШЕНО КОЛИЧЕСТВО СИМВОЛОВ (100)</color>";
                         return false;
                     }
 
-                    Log.Info(msg);
-                    foreach (Player player in Player.List.Where(p => (((p.Role != RoleType.Spectator || p.Role != RoleType.None) && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10) || p.IsOverwatchEnabled)))
+                    Log.Info($"Действие {msgAdminInfo}: {msg}");
+                    foreach (Player player in Player.List.Where(p => ((p.Role != RoleType.Spectator || p.Role != RoleType.None) && UnityEngine.Vector3.Distance(playerRequester.Position, p.Position) <= 10) || p.IsOverwatchEnabled))
                     {
-                        player.Broadcast(7, "<size=25><color=#C1B5B5>" + msg + "</color></size>");
+                        player.Broadcast(7, $"<size=30><color=#C1B5B5>Действие {(player.IsOverwatchEnabled ? msgAdminInfo + ":\n" : msgAuthorDisplayNickname + ": ")}{msg}</color></size>");
                     }
 
                     response = "\n<color=#C1B5B5>СТАТУС: </color><color=#6aa84f>УСПЕШНО</color>\n<color=#C1B5B5>ИСПОЛЬЗОВАНИЕ КОМАНДЫ: СООБЩЕНИЕ ОТПРАВЛЕНО</color>";

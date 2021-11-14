@@ -1,4 +1,5 @@
-﻿namespace BetterRP.Commands.Cuff
+﻿// #define Cuff
+namespace BetterRP.Commands.Cuff
 {
     using System;
     using System.Collections.Generic;
@@ -12,9 +13,6 @@
     using UnityEngine;
 
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    [CommandHandler(typeof(ClientCommandHandler))]
-    [CommandHandler(typeof(GameConsoleCommandHandler))]
-
     public class Cuff : ParentCommand
     {
         /// <summary>
@@ -23,13 +21,13 @@
         public Cuff() => this.LoadGeneratedCommands();
 
         /// <inheritdoc/>
-        public override string Command { get; } = "cuff";
+        public override string Command { get; } = "raycastinfo";
 
         /// <inheritdoc/>
         public override string[] Aliases { get; } = new string[] { };
 
         /// <inheritdoc/>
-        public override string Description { get; } = "Связывание человека или объекта";
+        public override string Description { get; } = "GetRayCastInfo";
 
         /// <inheritdoc/>
         public override void LoadGeneratedCommands()
@@ -40,9 +38,14 @@
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player playerRequester = Player.Get((sender as CommandSender)?.SenderId);
+#if Cuff
+            float distance = 3f;
+#else
+            float distance = 1000f;
+#endif
 
             CommandMethods.LogCommandUsed((CommandSender)sender, CommandMethods.FormatArguments(arguments, 0));
-            if (!((CommandSender)sender).CheckPermission("betterRP.cuff"))
+            if (!((CommandSender)sender).CheckPermission("betterRP.raycastinfo"))
             {
                 response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ВЫВОД: В ДОСТУПЕ ОТКАЗАНО</color>";
                 return false;
@@ -54,16 +57,47 @@
                 return false;
             }
 
-            if (!Physics.Raycast(playerRequester.CameraTransform.position, playerRequester.CameraTransform.forward, out RaycastHit raycastthit, 3f))
+            if (!Physics.Raycast(playerRequester.CameraTransform.position, playerRequester.CameraTransform.forward, out RaycastHit raycastthit, distance))
             {
                 response = "\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ВЫВОД: ОБЪЕКТ НЕ НАЙДЕН В ЗОНЕ ДОСЯГАЕМОСТИ</color>";
                 return false;
             }
+#if Cuff
             else if (Player.Get(raycastthit.transform.gameObject) == null)
             {
-                response = $"\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>\n<color=#C1B5B5>ВЫВОД: ОБЪЕКТ {raycastthit.transform.gameObject.name} {raycastthit.transform.gameObject.tag} {raycastthit.transform.gameObject.GetType()} НЕ РАСПОЗНАН</color>";
+                response = string.Join(
+                    "\n",
+                    $"\n<color=#C1B5B5>СТАТУС: </color><color=#990000>ОШИБКА</color>",
+                    $"<color=#C1B5B5>ВЫВОД: ОБЪЕКТ НЕ РАСПОЗНАН</color>");
+#else
+            else
+            {
+                response = string.Join(
+                    "\n",
+                    $"Current raycast object:",
+                    $"raycastthit.barycentricCoordinate: {raycastthit.barycentricCoordinate}",
+                    $"raycastthit.collider: {raycastthit.collider}",
+                    $"raycastthit.distance: {raycastthit.distance}",
+                    $"raycastthit.GetType(): {raycastthit.GetType()}",
+                    $"raycastthit.lightmapCoord: {raycastthit.lightmapCoord}",
+                    $"raycastthit.normal: {raycastthit.normal}",
+                    $"raycastthit.point: {raycastthit.point}",
+                    $"raycastthit.rigidbody: {raycastthit.rigidbody}",
+                    $"raycastthit.textureCoord: {raycastthit.textureCoord}",
+                    $"raycastthit.textureCoord2: {raycastthit.textureCoord2}",
+                    $"raycastthit: {raycastthit}",
+                    $"raycastthit.transform: {raycastthit.transform}",
+                    $"raycastthit.triangleIndex: {raycastthit.triangleIndex}",
+                    $"raycastthit.transform.gameObject.name: {raycastthit.transform.gameObject.name}",
+                    $"raycastthit.transform.gameObject.gameObject.GetComponent<Player>()?.Nickname: {raycastthit.transform.gameObject.GetComponent<Player>()?.Nickname}",
+                    $"Player.Get(raycastthit.transform.gameObject)?.Nickname: {Player.Get(raycastthit.transform.gameObject)?.Nickname}",
+                    $"raycastthit.transform.gameObject.tag: {raycastthit.transform.gameObject.tag}",
+                    $"raycastthit.transform.gameObject.GetType(): {raycastthit.transform.gameObject.GetType()}");
+#endif
+
                 return false;
             }
+#if Cuff
             else
             {
                 var target = Player.Get(raycastthit.transform.gameObject);
@@ -93,6 +127,7 @@
                 response = "\n<color=#C1B5B5>СТАТУС: </color><color=#6aa84f>УСПЕШНО</color>\n<color=#C1B5B5>ВЫВОД: ЦЕЛЬ ОБЕЗВРЕЖЕНА</color>";
                 return true;
             }
+#endif
         }
     }
 }
