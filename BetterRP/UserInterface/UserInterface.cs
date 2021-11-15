@@ -15,11 +15,16 @@
     public class UserInterface
     {
         private static readonly string Pattern = "<color=#C1B5B5>%PARAMNAME<pos=-7%>  :  </color><color=#%COLOR>%VALUE</color>";
+
         private static readonly List<RoleType> IgnoredRoles = new List<RoleType> { RoleType.None, RoleType.Spectator, RoleType.Scp096, RoleType.Scp079 };
         private readonly string stringStart = "<align=left><pos=-21%><b><size=20>";
         private readonly string stringEnd = "</size><b></pos></align>\n";
         private readonly Plugin plugin;
-        private Dictionary<string, int> connectionTextTimer = new Dictionary<string, int> { };
+
+        /// <summary>
+        /// Gets or sets amounts of second for display dealy.
+        /// </summary>
+        public static Dictionary<string, int> ConnectionTextTimer { get; set; } = new Dictionary<string, int> { };
 
         /// <summary>
         /// Activates user interface.
@@ -44,62 +49,84 @@
                 {
                     foreach (var player in Player.List.Where(x => x != null && !IgnoredRoles.Contains(x.Role)))
                     {
-                        Log.Debug($"Configurating display info for player: {player.Nickname} with pseudo name: {player.DisplayNickname} and role: {player.Role}", Plugin.Instance.Config.Debug);
-                        int lines = 11;
-                        string[] display = new string[] { };
-                        display.Concat(this.AbilitiesCheck(player));
-                        display.Concat(this.TocCheck(player, ref nukeNotifSwitcher));
-                        display.Concat(this.VentCheck(player));
+                        Log.Debug($"Configurating display info for player: {player.Nickname} with pseudo name: {player.DisplayNickname}, role: {player.Role} and custom info {player.CustomInfo ?? "null"}.", Plugin.Instance.Config.Debug);
+                        List<string> display = new List<string> { };
+                        display.AddRange(this.AbilitiesCheck(player));
 
-                        if (display.Length > 0)
+                        Log.Debug($"Total count of rows after ability check: {display.Count}.");
+                        if ((player.Team == Team.MTF && player.Role != RoleType.FacilityGuard) || player.Team == Team.CHI)
                         {
-                            display.Append("\n");
+                            display.Add(this.TocCheck(player, ref nukeNotifSwitcher));
                         }
 
-                        for (int i = 0; i < lines - display.Length; i++)
+                        Log.Debug($"Total count of rows after toc check: {display.Count}.");
+                        display.AddRange(this.VentCheck(player));
+
+                        Log.Debug($"Total count of rows after vent check: {display.Count}.");
+                        if (display.Count > 0)
                         {
-                            display.Prepend("\n ");
+                            display.Add("\n ");
+
+                            Log.Debug($"Additional rows detected. Added \\n symbol. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                         }
 
-                        if (this.connectionTextTimer.TryGetValue(player.UserId, out int seconds))
+                        Log.Debug($" Added \\n symbols for moving display lower. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
+                        if (ConnectionTextTimer.TryGetValue(player.UserId, out int seconds))
                         {
                             if (seconds > 7)
                             {
-                                this.connectionTextTimer[player.UserId]--;
+                                ConnectionTextTimer[player.UserId]--;
+
+                                Log.Debug($"Started display delay detected. Seconds remaining: {ConnectionTextTimer[player.UserId]}. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                                 continue;
                             }
                             else if (seconds > 0)
                             {
-                                this.connectionTextTimer[player.UserId]--;
-                                display.Append(Pattern.Replace("%PARAMNAME", "ПОЛЬЗОВАТЕЛЬ").Replace("%VALUE", player.Nickname));
+                                ConnectionTextTimer[player.UserId]--;
+                                display.Add(Pattern.Replace("%PARAMNAME", "ПОЛЬЗОВАТЕЛЬ").Replace("%VALUE", player.Nickname));
+
+                                Log.Debug($"Started name display. detected. Seconds remaining: {ConnectionTextTimer[player.UserId]}. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                             }
                             else
                             {
-                                display.Append("\n");
+                                Log.Debug($"Skipping name display. Seconds remaining: {ConnectionTextTimer[player.UserId]}. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                             }
                         }
                         else
                         {
-                            this.connectionTextTimer.Add(player.UserId, 14);
+                            ConnectionTextTimer.Add(player.UserId, 14);
+
+                            Log.Debug($"New player detected. Seconds remaining: {ConnectionTextTimer[player.UserId]}. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                             continue;
                         }
 
-                        display.Append(Pattern.Replace("%PARAMNAME", Plugin.Instance.Config.NameType[player.Role]).Replace("%VALUE", player.DisplayNickname));
+                        display.Add(Pattern.Replace("%PARAMNAME", Plugin.Instance.Config.NameType[player.Role]).Replace("%VALUE", player.DisplayNickname));
+
+                        Log.Debug($"Adding NameType '{Plugin.Instance.Config.NameType[player.Role]}' and Role '{player.DisplayNickname}'. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                         if (player.Team != Team.SCP)
                         {
-                            display.Append(Pattern.Replace("%PARAMNAME", "ДОЛЖНОСТЬ").Replace(
+                            display.Add(Pattern.Replace("%PARAMNAME", "ДОЛЖНОСТЬ").Replace(
                                    "%VALUE",
                                    (player.CustomInfo == string.Empty || player.CustomInfo == null) ? Plugin.Instance.Config.RoleNames[player.Role].First().Value : player.CustomInfo).Replace(
                                 "%UNIT", player.UnitName));
+
+                            Log.Debug($"Adding Post '{((player.CustomInfo == string.Empty || player.CustomInfo == null) ? Plugin.Instance.Config.RoleNames[player.Role].First().Value : player.CustomInfo).Replace("%UNIT", player.UnitName)}'. Total count of rows: {display.Count}.", Plugin.Instance.Config.Debug);
                         }
 
-                        for (int i = 0; i < display.Length; i++)
+                        for (int i = 0; i < 20 - display.Count; i++)
+                        {
+                            display.Insert(0, "\n ");
+                        }
+
+                        for (int i = 0; i < display.Count; i++)
                         {
                             display[i] = this.stringStart + display[i].Replace("%COLOR", Plugin.Instance.Config.ColorsPerRoles[player.Role]) + this.stringEnd;
                         }
 
+                        Log.Debug($"Color has been changed to {Plugin.Instance.Config.ColorsPerRoles[player.Role]}. Total count of rows: {display.Count}");
                         string result = string.Join(string.Empty, display);
-                        Log.Debug($"Total count of symbols/rows: {result.Length}/{display.Length}.", Plugin.Instance.Config.Debug);
+
+                        Log.Debug($"Total count of symbols/rows: {result.Length}/{display.Count}.\n___________________________________________________________", Plugin.Instance.Config.Debug);
                         player.ShowHint(result, 1.5f);
                     }
                 }
@@ -111,103 +138,93 @@
                 yield return MEC.Timing.WaitForSeconds(1f);
             }
 
-            this.connectionTextTimer.Clear();
+            ConnectionTextTimer.Clear();
             API.PlayerNames.ClassDperRound.Clear();
         }
 
-        private string[] AbilitiesCheck(Player player)
+        private List<string> AbilitiesCheck(Player player)
         {
-            string[] result = new string[] { };
+            List<string> result = new List<string> { };
             if (player.IsGodModeEnabled)
             {
-                result.Append(Pattern.Replace("%PARAMNAME", "GODMOD").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ДОСТУПНО"));
+                result.Add(Pattern.Replace("%PARAMNAME", "GODMOD").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ДОСТУПНО"));
             }
 
             if (player.NoClipEnabled)
             {
-                result.Append(Pattern.Replace("%NOCLIP", "GODMOD").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ДОСТУПНО"));
+                result.Add(Pattern.Replace("%PARAMNAME", "NOCLIP").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ДОСТУПНО"));
             }
 
             if (player.IsBypassModeEnabled)
             {
-                result.Append(Pattern.Replace("%BYPASS", "GODMOD").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ДОСТУПНО"));
+                result.Add(Pattern.Replace("%PARAMNAME", "BYPASS").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ДОСТУПНО"));
             }
 
+            Log.Debug($"Total count of ability rows: {result.Count}.");
             return result;
         }
 
-        private string[] TocCheck(Player player, ref bool showNukeWarning)
+        private string TocCheck(Player player, ref bool showNukeWarning)
         {
-            string[] result = new string[] { };
-            if (player.CurrentRoom.Type == RoomType.Surface)
+            string result = string.Empty;
+            if (Plugin.Instance.Config.RoomsWithConnToTOC.Contains(player.CurrentRoom.Type))
             {
-                if (player.Team == Team.MTF && player.Role != RoleType.FacilityGuard)
+                if (Plugin.Instance.Config.DirectTOC.Contains(player.Role))
                 {
-                    if (Warhead.IsInProgress)
+                    if ((player.Team == Team.MTF ? Commands.TOC.TOC.OnTheWayMTF : Commands.TOC.TOC.OnTheWayCHI) > UnityEngine.Time.time)
                     {
-                        if (showNukeWarning)
-                        {
-                            result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#990000").Replace("%VALUE", "В ЗОНЕ ПОРАЖЕНИЯ БОЕГОЛОВКИ"));
-                        }
-                        else if (Commands.TOC.TOC.OnEvacuateCooldownMTF < UnityEngine.Time.time && player.Role == RoleType.NtfCaptain && Warhead.DetonationTimer < (Plugin.Instance.Config.TimeInTheWay / 2) + 18f)
-                        {
-                            result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ТРАНСПОРТ ДОСТУПЕН"));
-                        }
-                        else
-                        {
-                            result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#6aa84f").Replace("%VALUE", string.Empty));
-                        }
-
-                        showNukeWarning = !showNukeWarning;
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "0180DA").Replace("%VALUE", "В ПУТИ");
                     }
-                    else if (Commands.TOC.TOC.OnEvacuateCooldownMTF < UnityEngine.Time.time && player.Role == RoleType.NtfCaptain)
+                    else if ((player.Team == Team.MTF ? Commands.TOC.TOC.OnSupportCooldownMTF : Commands.TOC.TOC.OnSupportCooldownCHI) > UnityEngine.Time.time)
                     {
-                        result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ТРАНСПОРТ ДОСТУПЕН"));
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "CE7E00").Replace("%VALUE", "СБОР");
+                    }
+                    else if (!Warhead.IsDetonated &&
+                        (((!Warhead.IsInProgress ||
+                        Warhead.DetonationTimer > (Plugin.Instance.Config.TimeInTheWay / 2) + 18f) && player.Team == Team.MTF) || player.Team == Team.CHI))
+                    {
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ТРАНСПОРТ ДОСТУПЕН");
+                    }
+                    else
+                    {
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "990000").Replace("%VALUE", string.Empty);
                     }
                 }
-                else if (player.Team == Team.CHI)
+
+                if (Warhead.IsInProgress)
                 {
-                    if (player.Role == RoleType.ChaosMarauder)
+                    if (showNukeWarning && (Plugin.Instance.Config.WarheadWarning.Contains(player.Role) ||
+                        (Plugin.Instance.Config.DirectTOC.Contains(player.Role) && Warhead.IsDetonated)))
                     {
-                        if (Commands.TOC.TOC.OnEvacuateCooldownCHI < UnityEngine.Time.time)
-                        {
-                            result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ТРАНСПОРТ ДОСТУПЕН"));
-                        }
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "990000").Replace("%VALUE", "В ЗОНЕ ПОРАЖЕНИЯ БОЕГОЛОВКИ");
                     }
+                    else if (Plugin.Instance.Config.WarheadWarning.Contains(player.Role) &&
+                        !Plugin.Instance.Config.DirectTOC.Contains(player.Role))
+                    {
+                        result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "990000").Replace("%VALUE", string.Empty);
+                    }
+
+                    showNukeWarning = !showNukeWarning;
                 }
             }
-            else
+            else if (Plugin.Instance.Config.DirectTOC.Contains(player.Role))
             {
-                if (player.Team == Team.MTF && player.Role != RoleType.FacilityGuard)
-                {
-                    if (player.Role == RoleType.NtfCaptain)
-                    {
-                        result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#990000").Replace("%VALUE", "НЕТ СИГНАЛА"));
-                    }
-                }
-                else if (player.Team == Team.CHI)
-                {
-                    if (player.Role == RoleType.ChaosMarauder)
-                    {
-                        if (player.CurrentRoom.Type != RoomType.Surface)
-                        {
-                            result.Append(Pattern.Replace("%POSTNAME", "TOC").Replace("%COLOR", "#990000").Replace("%VALUE", "НЕТ СИГНАЛА"));
-                        }
-                    }
-                }
+                result = Pattern.Replace("%PARAMNAME", "TOC").Replace("%COLOR", "990000").Replace("%VALUE", "НЕТ СИГНАЛА");
             }
 
+            Log.Debug($"Total count of toc rows: {result.Length}.", Plugin.Instance.Config.Debug);
             return result;
         }
 
-        private string[] VentCheck(Player player)
+        private List<string> VentCheck(Player player)
         {
-            string[] result = new string[] { };
+            List<string> result = new List<string> { };
             if (player.Role == RoleType.Scp173 && player.GetEffect(EffectType.Asphyxiated).Intensity > 0)
             {
-                result.Append(Pattern.Replace("%POSTNAME", "ВЕНТИЛЯЦИЯ").Replace("%COLOR", "#6aa84f").Replace("%VALUE", "ДОСТУПНО"));
+                result.Add(Pattern.Replace("%PARAMNAME", "ВЕНТИЛЯЦИЯ").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ДОСТУПНО"));
             }
 
+            Log.Debug($"Total count of vent rows: {result.Count}.", Plugin.Instance.Config.Debug);
             return result;
         }
     }

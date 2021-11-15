@@ -100,6 +100,8 @@ namespace BetterRP.Commands.TOC
             { RoleType.ClassD, 1 },
         };
 
+        private static bool spawnBlock;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TOC"/> class.
         /// </summary>
@@ -150,25 +152,34 @@ namespace BetterRP.Commands.TOC
             if (ev.IsAllowed)
             {
                 Log.Debug($"Catched allowed RespawningTeamEvent");
-                ev.IsAllowed = false;
-                Log.Debug($"Usual spawning has been disbled.");
-                if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
+                if (spawnBlock == false)
                 {
-                    Respawn.ForceWave(Respawning.SpawnableTeamType.ChaosInsurgency, false);
-                    Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
-                    OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
-                    OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
-                    Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
-                    Plugin.Instance.NewCoroutine(Evacuate(Team.CHI, true));
+                    spawnBlock = true;
+                    ev.IsAllowed = false;
+                    Log.Debug($"Usual spawning has been disbled.");
+                    if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
+                    {
+                        Respawn.ForceWave(Respawning.SpawnableTeamType.ChaosInsurgency, false);
+                        Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
+                        OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
+                        OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
+                        Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
+                        Plugin.Instance.NewCoroutine(Evacuate(Team.CHI, true));
+                    }
+                    else if (ev.NextKnownTeam == Respawning.SpawnableTeamType.NineTailedFox)
+                    {
+                        Respawn.ForceWave(Respawning.SpawnableTeamType.NineTailedFox, false);
+                        Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
+                        OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
+                        OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
+                        Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
+                        Plugin.Instance.NewCoroutine(Evacuate(Team.MTF, true));
+                    }
                 }
-                else if (ev.NextKnownTeam == Respawning.SpawnableTeamType.NineTailedFox)
+                else
                 {
-                    Respawn.ForceWave(Respawning.SpawnableTeamType.NineTailedFox, false);
-                    Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
-                    OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
-                    OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
-                    Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
-                    Plugin.Instance.NewCoroutine(Evacuate(Team.MTF, true));
+                    ev.IsAllowed = true;
+                    spawnBlock = false;
                 }
             }
         }
@@ -181,6 +192,23 @@ namespace BetterRP.Commands.TOC
             foreach (var player in Player.List.Where(p => p.Role != RoleType.Spectator && p.Role != RoleType.Tutorial && p.Role != RoleType.None && !p.IsGodModeEnabled))
             {
                 player.Kill(DamageTypes.Nuke);
+            }
+        }
+
+        public static void OnEndingRound(EndingRoundEventArgs ev)
+        {
+            if (Warhead.IsInProgress && (ev.ClassList.mtf_and_guards > 0 || ev.ClassList.scientists > 0))
+            {
+                ev.IsRoundEnded = false;
+            }
+            else if (Warhead.IsDetonated)
+            {
+                ev.LeadingTeam = LeadingTeam.ChaosInsurgency;
+                ev.IsRoundEnded = true;
+            }
+            else if (ev.ClassList.scps_except_zombies > 0 && ev.ClassList.chaos_insurgents > 0)
+            {
+                ev.IsRoundEnded = false;
             }
         }
 
@@ -254,7 +282,7 @@ namespace BetterRP.Commands.TOC
                     subcommand = Subcommand.Support;
                 }
 
-                Log.Debug($"nLast entered MTF/CHI time: {OnTheWayMTF}/{OnTheWayCHI}", Plugin.Instance.Config.Debug);
+                Log.Debug($"Last entered MTF/CHI time: {OnTheWayMTF}/{OnTheWayCHI}. Current time: {Time.time}", Plugin.Instance.Config.Debug);
                 if ((OnTheWayMTF > Time.time && playerRequester.Team == Team.MTF) ||
                     (OnTheWayCHI > Time.time && playerRequester.Team == Team.CHI))
                 {
@@ -263,6 +291,7 @@ namespace BetterRP.Commands.TOC
                     return true;
                 }
 
+                Log.Debug($"Last reload MTF sup/evac time:{OnSupportCooldownMTF}/{OnEvacuateCooldownMTF}. CHI sup/evc time: {OnSupportCooldownCHI}/{OnEvacuateCooldownCHI}. Current time: {Time.time}", Plugin.Instance.Config.Debug);
                 if (((OnEvacuateCooldownMTF > Time.time || OnSupportCooldownMTF > Time.time) && playerRequester.Team == Team.MTF) ||
                     ((OnEvacuateCooldownCHI > Time.time || OnSupportCooldownCHI > Time.time) && playerRequester.Team == Team.CHI))
                 {
@@ -271,12 +300,13 @@ namespace BetterRP.Commands.TOC
                     return true;
                 }
 
-                if (Warhead.IsInProgress && Warhead.DetonationTimer < (Plugin.Instance.Config.TimeInTheWay / 2) + (playerRequester.Team == Team.MTF ? 18f : 13f))
+                Log.Debug($"Warhead.IsInProgress: {Warhead.IsInProgress}. Warhead.DetonationTimer: {Warhead.DetonationTimer} MTF EST time: {(Plugin.Instance.Config.TimeInTheWay / 2) + 36f}. Current time: {Time.time}", Plugin.Instance.Config.Debug);
+                if (playerRequester.Team == Team.MTF && Warhead.IsInProgress && Warhead.DetonationTimer < (Plugin.Instance.Config.TimeInTheWay / 2) + 36f)
                 {
                     Log.Debug(string.Join(
                         string.Empty,
                         $"Skipping. Too close to warhead detonation: {Warhead.DetonationTimer}. ",
-                        $"Required time for entering: {(Plugin.Instance.Config.TimeInTheWay / 2) + (playerRequester.Team == Team.MTF ? 18f : 13f)}",
+                        $"Required time for entering: {(Plugin.Instance.Config.TimeInTheWay / 2) + 36f}",
                         Plugin.Instance.Config.Debug));
 
                     response = "\"Говорит TOC. Эвакуация невозможна, вы в зоне поражения Альфа-боеголовки. Конец связи.\"";
@@ -324,13 +354,13 @@ namespace BetterRP.Commands.TOC
                 if (playerRequester.Team == Team.CHI)
                 {
                     Log.Debug($"Executing for CHI command. Defined TimeInTheWay: {(subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay)}", Plugin.Instance.Config.Debug);
-                    OnTheWayCHI = Time.time + (subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay);
+                    OnTheWayCHI = Time.time + (subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay) + 14f;
                     Log.Debug($"New entering time for CHI team: {OnTheWayCHI}. Calling Evacuate coroutine", Plugin.Instance.Config.Debug);
                 }
                 else
                 {
                     Log.Debug($"Executing for MTF command. Defined TimeInTheWay: {(subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay)}", Plugin.Instance.Config.Debug);
-                    OnTheWayMTF = Time.time + (subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay);
+                    OnTheWayMTF = Time.time + (subcommand == Subcommand.Evacuate ? Plugin.Instance.Config.TimeInTheWay / 2 : Plugin.Instance.Config.TimeInTheWay) + 19f;
                     Log.Debug($"New entering time for MTF team: {OnTheWayMTF}. Calling Evacuate coroutine", Plugin.Instance.Config.Debug);
                 }
 
@@ -365,7 +395,7 @@ namespace BetterRP.Commands.TOC
             }
             else
             {
-                readyToEvac = Player.List.Where(x => Vector3.Distance(x.Position, point) <= Plugin.Instance.Config.Distance).ToList();
+                readyToEvac = Player.List.Where(x => Vector3.Distance(x.Position, point) <= Plugin.Instance.Config.EvacuationDistance).ToList();
                 Log.Debug($"Warhead has been activated. Count of targets: {readyToEvac.Count}", Plugin.Instance.Config.Debug);
             }
 
@@ -375,7 +405,7 @@ namespace BetterRP.Commands.TOC
             sbyte capacity = 10;
             Log.Debug($"Current vehicle capacity: {capacity}.", Plugin.Instance.Config.Debug);
             List<Pickup> itemsToEvac = Map.Pickups.ToList().Where(
-                x => Vector3.Distance(x.Position, point) <= Plugin.Instance.Config.Distance &&
+                x => Vector3.Distance(x.Position, point) <= Plugin.Instance.Config.EvacuationDistance &&
                 (team == Team.MTF ? Plugin.Instance.Config.MTFEvacItems : Plugin.Instance.Config.CHIEvacItems).Contains(x.Type)).ToList();
             Log.Debug($"Trying to evacuating items of {team} team.", Plugin.Instance.Config.Debug);
             foreach (var item in itemsToEvac)
@@ -386,9 +416,12 @@ namespace BetterRP.Commands.TOC
 
             for (int role = 0; role < evacQuery.GetLength(0); role++)
             {
-                foreach (Player ply in readyToEvac.Where(x => x.Role == (RoleType)evacQuery[role, 0] && x.IsCuffed == Convert.ToBoolean(evacQuery[role, 1])))
+                foreach (Player ply in readyToEvac.Where(
+                    x => x.Role == (RoleType)evacQuery[role, 0] &&
+                    x.IsCuffed == Convert.ToBoolean(evacQuery[role, 1]) &&
+                    Vector3.Distance(point, x.Position) <= Plugin.Instance.Config.EvacuationDistance))
                 {
-                    Log.Debug($"Player {ply.Nickname} with {ply.Role} has evac. distance: {Vector3.Distance(ply.Position, point)}. Config distance: {Plugin.Instance.Config.Distance}", Plugin.Instance.Config.Debug);
+                    Log.Debug($"Player {ply.Nickname} with {ply.Role} has evac. distance: {Vector3.Distance(ply.Position, point)}. Config distance: {Plugin.Instance.Config.EvacuationDistance}", Plugin.Instance.Config.Debug);
                     if (PlayerWeight[ply.Role] > capacity)
                     {
                         Log.Debug($"Player weight bigger than current trasport capacity. Skipping.", Plugin.Instance.Config.Debug);
@@ -420,32 +453,33 @@ namespace BetterRP.Commands.TOC
                     }
 
                     ply.ClearInventory();
+                    ply.Ammo.Clear();
                     Log.Debug($"Player inventory has been cleared.", Plugin.Instance.Config.Debug);
                     ply.SetRole(RoleType.Spectator);
                     Log.Debug($"Player has been moved into spectators.", Plugin.Instance.Config.Debug);
-
-                    if (!force)
-                    {
-                        if (team == Team.CHI)
-                        {
-                            Log.Debug($"Previous Evacuation/Support cooldown of {team}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
-                            OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
-                            OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
-                            Log.Debug($"New Evacuation/Support cooldown of {team}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
-                        }
-                        else
-                        {
-                            Log.Debug($"Previous Evacuation/Support cooldown of {team}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
-                            OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
-                            OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
-                            Log.Debug($"New Evacuation/Support cooldown of {team}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
-                        }
-                    }
-                    else
-                    {
-                        Log.Debug($"Evacuation has been forced. Reload time skipped.", Plugin.Instance.Config.Debug);
-                    }
                 }
+            }
+
+            if (!force)
+            {
+                if (team == Team.CHI)
+                {
+                    Log.Debug($"Previous Evacuation/Support cooldown of {team}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
+                    OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
+                    OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
+                    Log.Debug($"New Evacuation/Support cooldown of {team}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
+                }
+                else
+                {
+                    Log.Debug($"Previous Evacuation/Support cooldown of {team}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
+                    OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
+                    OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
+                    Log.Debug($"New Evacuation/Support cooldown of {team}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
+                }
+            }
+            else
+            {
+                Log.Debug($"Evacuation has been forced. Reload time skipped.", Plugin.Instance.Config.Debug);
             }
         }
 

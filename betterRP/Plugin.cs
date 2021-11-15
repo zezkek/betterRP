@@ -18,14 +18,19 @@ namespace BetterRP
 
     public class Plugin : Plugin<Config>
     {
+        private static readonly Plugin InstanceValue = new Plugin();
         private readonly List<MEC.CoroutineHandle> coroutines = new List<MEC.CoroutineHandle>();
-
         private PlayerNames playerNames;
         private PlayerResize playerResize;
         private GrenadesAdditionalEffects grenadesAdditionalEffects;
         private StartsBlackout startsBlackout;
         private TeslaDisable teslaDisable;
         private UserInterface.UserInterface userInterface;
+        private CommandMethods commandMethods;
+
+        private Plugin()
+        {
+        }
 
         public static List<string> SurnameBase { get; set; } = new List<string> { };
 
@@ -33,7 +38,7 @@ namespace BetterRP
 
         public static List<string> SponsorsNamesBase { get; set; } = new List<string> { };
 
-        public static Plugin Instance => new Lazy<Plugin>(valueFactory: () => new Plugin()).Value;
+        public static Plugin Instance => InstanceValue;
 
         public override string Name { get; } = "BetterRP";
 
@@ -41,7 +46,7 @@ namespace BetterRP
 
         public override string Prefix => "BetterRP";
 
-        public override Version Version => new Version(1, 3, 0);
+        public override Version Version => new Version(1, 3, 1);
 
         public void AddCoroutine(MEC.CoroutineHandle coroutineHandle) => this.coroutines.Add(coroutineHandle);
 
@@ -60,7 +65,7 @@ namespace BetterRP
                 return;
             }
 
-            // commandMethods = new CommandMethods(this);
+            this.commandMethods = new CommandMethods(this);
             this.playerNames = new PlayerNames();
             this.playerResize = new PlayerResize();
             this.grenadesAdditionalEffects = new GrenadesAdditionalEffects(this);
@@ -72,7 +77,6 @@ namespace BetterRP
             this.startsBlackout = new StartsBlackout(this);
 
             PlayerEv.ChangingRole += this.playerNames.OnChangingRole;
-            PlayerEv.Spawning += this.playerNames.OnSpawning;
             PlayerEv.ChangingRole += this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying += this.playerResize.OnDying;
 #if PlayerLeave
@@ -97,14 +101,12 @@ namespace BetterRP
         /// <inheritdoc/>
         public override void OnDisabled()
         {
-            // commandMethods = null;
             if (this.coroutines != null && this.coroutines.Count > 0)
             {
                 MEC.Timing.KillCoroutines(this.coroutines.ToArray());
             }
 
             PlayerEv.ChangingRole -= this.playerNames.OnChangingRole;
-            PlayerEv.Spawning -= this.playerNames.OnSpawning;
             PlayerEv.ChangingRole -= this.playerResize.OnChangingRoleEventArgs;
             PlayerEv.Dying -= this.playerResize.OnDying;
 #if PlayerLeave
@@ -130,6 +132,7 @@ namespace BetterRP
             this.startsBlackout = null;
             this.teslaDisable = null;
             this.userInterface = null;
+            this.commandMethods = null;
             SurnameBase = new List<string> { };
             CallSignsBase = new List<string> { };
             SponsorsNamesBase = new List<string> { };

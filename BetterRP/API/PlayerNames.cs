@@ -68,12 +68,14 @@
         {
             Log.Debug("Starting SetName coroutine.", Plugin.Instance.Config.Debug);
             Plugin.Instance.NewCoroutine(this.SetName(ev.Player, ev.NewRole));
-        }
-
-        public void OnSpawning(SpawningEventArgs ev)
-        {
-            Log.Debug("Starting SetName coroutine.", Plugin.Instance.Config.Debug);
-            Plugin.Instance.NewCoroutine(this.SetName(ev.Player, ev.RoleType));
+            if (UserInterface.UserInterface.ConnectionTextTimer.TryGetValue(ev.Player.UserId, out int seconds))
+            {
+                UserInterface.UserInterface.ConnectionTextTimer[ev.Player.UserId] = 14;
+            }
+            else
+            {
+                UserInterface.UserInterface.ConnectionTextTimer.Add(ev.Player.UserId, 14);
+            }
         }
 
         private void LoadNames(List<NameBase> nameBase = null)
@@ -119,168 +121,192 @@
             }
         }
 
-        private IEnumerator<float> NameChangeDelay(Player player)
-        {
-            string customInfo = player.CustomInfo;
-            string displayNickname = player.DisplayNickname;
-            player.CustomInfo = string.Empty;
-            player.DisplayNickname = string.Empty;
-            yield return MEC.Timing.WaitForSeconds(10f);
-            if (player == null)
-            {
-                yield break;
-            }
-
-            if (player.IsAlive && player.Role != RoleType.Scp0492)
-            {
-                yield break;
-            }
-
-            if (!player.IsAlive)
-            {
-                player.CustomInfo = string.Empty;
-                player.DisplayNickname = string.Empty;
-                this.militaryRole.Remove(player.UserId);
-
-                yield break;
-            }
-
-            if (this.militaryRole.TryGetValue(player.UserId, out string cInfo))
-            {
-                player.CustomInfo = cInfo;
-                this.militaryRole.Remove(player.UserId);
-            }
-            else
-            {
-                player.CustomInfo = customInfo;
-            }
-
-            player.DisplayNickname = displayNickname;
-            yield break;
-        }
-
         private IEnumerator<float> SetName(Player player, RoleType role)
         {
             yield return MEC.Timing.WaitForSeconds(0.1f);
-            try
+            if (Plugin.Instance.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
-                if (Plugin.Instance.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
+                string selectedname;
+                string customInfo = player.CustomInfo;
+                string displayNickname = player.DisplayNickname;
+                player.CustomInfo = string.Empty;
+                player.DisplayNickname = string.Empty;
+                if (player.Team != Team.SCP)
                 {
-                    string selectedname;
-                    this.militaryRole.Remove(player.UserId);
-                    if (player.Team != Team.SCP)
+                    switch (role)
                     {
-                        switch (role)
-                        {
-                            case RoleType.ClassD:
-                                if (ClassDperRound.Count > 800)
+                        case RoleType.ClassD:
+                            if (ClassDperRound.Count > 800)
+                            {
+                                this.classDPart++;
+                                ClassDperRound.Clear();
+                            }
+
+                            string number;
+                            for (; ; )
+                            {
+                                number = $"{UnityEngine.Random.Range(0, 1000)}";
+                                if (UnityEngine.Random.Range(0, 100) < 90)
                                 {
-                                    this.classDPart++;
-                                    ClassDperRound.Clear();
-                                }
-
-                                string number;
-                                for (; ; )
-                                {
-                                    number = $"{UnityEngine.Random.Range(0, 1000)}";
-                                    if (UnityEngine.Random.Range(0, 100) < 90)
-                                    {
-                                        number = "D-" + this.classDPart + string.Join(string.Empty, new string('0', 3 - number.Length), number);
-                                    }
-                                    else
-                                    {
-                                        number = "D-" + this.rnd.Next(10000, 99999).ToString();
-                                    }
-
-                                    if (!ClassDperRound.Contains(number))
-                                    {
-                                        break;
-                                    }
-                                }
-
-                                ClassDperRound.Add(number);
-                                player.DisplayNickname = number;
-                                break;
-                            case RoleType.Scientist:
-                            case RoleType.FacilityGuard:
-                                if (this.surnames.Count <= 0)
-                                {
-                                    this.LoadNames(new List<NameBase> { NameBase.Surnames, });
-                                }
-
-                                selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
-                                this.surnames.Remove(selectedname);
-
-                                player.DisplayNickname = (player.Role == RoleType.Scientist ? "д-р " : string.Empty) +
-                                    $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
-                                player.CustomInfo = Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
-                                    i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
-                                    player.Inventory.UserInventory.Items.Values.Where(
-                                    i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
-                                break;
-                            default:
-                                if (player.Team == Team.CHI || player.Team == Team.MTF)
-                                {
-                                    if ((player.Role == RoleType.NtfCaptain || player.Role == RoleType.ChaosMarauder) && this.sponsorsNames.Count > 0)
-                                    {
-                                        selectedname = this.sponsorsNames[this.rnd.Next(this.sponsorsNames.Count)];
-                                        this.sponsorsNames.Remove(selectedname);
-                                    }
-                                    else
-                                    {
-                                        if (this.callSigns.Count <= 0)
-                                        {
-                                            this.LoadNames(new List<NameBase> { NameBase.CallSigns, });
-                                        }
-
-                                        selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
-                                        this.callSigns.Remove(selectedname);
-                                    }
-
-                                    string roleName = Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
-                                        i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
-                                        player.Inventory.UserInventory.Items.Values.Where(
-                                        i => i.Category == ItemCategory.Keycard).First().ItemTypeId].Replace("%UNIT", player.UnitName);
-
-                                    if (this.militaryRole.TryGetValue(player.UserId, out string prevRole))
-                                    {
-                                        this.militaryRole[player.UserId] = roleName;
-                                    }
-                                    else
-                                    {
-                                        this.militaryRole.Add(player.UserId, roleName);
-                                    }
-
-                                    player.DisplayNickname = $"'{selectedname}'";
-                                    break;
+                                    number = "D-" + this.classDPart + string.Join(string.Empty, new string('0', 3 - number.Length), number);
                                 }
                                 else
                                 {
-                                    Plugin.Instance.NewCoroutine(this.NameChangeDelay(player));
+                                    number = "D-" + this.rnd.Next(10000, 99999).ToString();
                                 }
 
-                                break;
-                        }
+                                if (!ClassDperRound.Contains(number))
+                                {
+                                    break;
+                                }
+                            }
 
-                        Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.Instance.Config.Debug);
-                    }
-                    else
-                    {
-                        if (role != RoleType.Scp0492)
-                        {
-                            player.CustomInfo = string.Empty;
-                            player.DisplayNickname =
-                                Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
+                            ClassDperRound.Add(number);
+                            player.DisplayNickname = number;
+                            break;
+                        case RoleType.Scientist:
+                        case RoleType.FacilityGuard:
+                            if (this.surnames.Count <= 0)
+                            {
+                                this.LoadNames(new List<NameBase> { NameBase.Surnames, });
+                            }
+
+                            selectedname = this.surnames[this.rnd.Next(this.surnames.Count)];
+                            this.surnames.Remove(selectedname);
+                            player.DisplayNickname = (player.Role == RoleType.Scientist ? "д-р " : string.Empty) +
+                                $"{selectedname} {this.names[UnityEngine.Random.Range(0, this.names.Length)]}.";
+                            player.CustomInfo = Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
                                 i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
                                 player.Inventory.UserInventory.Items.Values.Where(
                                 i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
+                            break;
+                        case RoleType.Spectator:
+                            Log.Debug($"Spectator catched. PlayableScps.Scp049.TimeToRevive (WaitForReturnOldName): {PlayableScps.Scp049.TimeToRevive}.");
+                            yield return MEC.Timing.WaitForSeconds(PlayableScps.Scp049.TimeToRevive);
+                            if (player == null)
+                            {
+                                Log.Debug($"Player is null. Ending.");
+                                yield break;
+                            }
+
+                            if (player.IsAlive && player.Role == RoleType.Scp0492)
+                            {
+                                Log.Debug($"Player is SCP-049-2. DisplayNickName: {displayNickname}. CustomInfo: {customInfo ?? "null"}");
+                                player.DisplayNickname = displayNickname;
+                                if (this.militaryRole.TryGetValue(player.UserId, out string cInfo))
+                                {
+                                    Log.Debug($"Military name has been found: {cInfo}.");
+                                    player.CustomInfo = cInfo;
+                                }
+                                else
+                                {
+                                    Log.Debug($"Applied CustomInfo: {customInfo ?? "null"}.");
+                                    player.CustomInfo = customInfo;
+                                }
+
+                                yield break;
+                            }
+
+                            this.militaryRole.Remove(player.UserId);
+                            yield break;
+                        default:
+                            if (player.Team == Team.CHI || player.Team == Team.MTF)
+                            {
+                                if ((player.Role == RoleType.NtfCaptain || player.Role == RoleType.ChaosMarauder) && this.sponsorsNames.Count > 0)
+                                {
+                                    selectedname = this.sponsorsNames[this.rnd.Next(this.sponsorsNames.Count)];
+                                    this.sponsorsNames.Remove(selectedname);
+                                }
+                                else
+                                {
+                                    if (this.callSigns.Count <= 0)
+                                    {
+                                        this.LoadNames(new List<NameBase> { NameBase.CallSigns, });
+                                    }
+
+                                    selectedname = this.callSigns[this.rnd.Next(this.callSigns.Count)];
+                                    this.callSigns.Remove(selectedname);
+                                }
+
+                                string roleName = Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
+                                    i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
+                                    player.Inventory.UserInventory.Items.Values.Where(
+                                    i => i.Category == ItemCategory.Keycard).First().ItemTypeId].Replace("%UNIT", player.UnitName);
+
+                                if (Plugin.Instance.Config.ColorsPerRoles.TryGetValue(player.Role, out string milColor) && player.CustomInfo != null && player.CustomInfo != string.Empty)
+                                {
+                                    roleName = $"<color=#{milColor}>{roleName}</color>";
+                                }
+
+                                if (this.militaryRole.TryGetValue(player.UserId, out string prevRole))
+                                {
+                                    this.militaryRole[player.UserId] = roleName;
+                                }
+                                else
+                                {
+                                    this.militaryRole.Add(player.UserId, roleName);
+                                }
+
+                                player.DisplayNickname = $"'{selectedname}'";
+                                break;
+                            }
+
+                            break;
+                    }
+
+                    if (player.CustomInfo != null && player.CustomInfo != string.Empty)
+                    {
+                        Log.Debug($"Searching subroles for role {player.Role}", Plugin.Instance.Config.Debug);
+                        if (Plugin.Instance.Config.ItemsPerSubroles.TryGetValue(player.Role, out Dictionary<string, List<ItemType>> rolenamesAndItems))
+                        {
+                            Log.Debug($"Searching items for subrole {player.CustomInfo}", Plugin.Instance.Config.Debug);
+                            if (rolenamesAndItems.TryGetValue(player.CustomInfo, out List<ItemType> items))
+                            {
+                                Log.Debug($"Amount of items: {items.Count}", Plugin.Instance.Config.Debug);
+                                if (8 - player.Inventory.UserInventory.Items.Count >= items.Count)
+                                {
+                                    foreach (var item in items)
+                                    {
+                                        try
+                                        {
+                                            if (!player.HasItem(item))
+                                            {
+                                                player.AddItem(item);
+                                                Log.Debug($"Item {item} has been added", Plugin.Instance.Config.Debug);
+                                            }
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error($"An error occured while trying to add add-l item {item}:\n{e}");
+                                            throw;
+                                        }
+
+                                    }
+
+                                }
+                            }
                         }
                     }
+
+                    if (Plugin.Instance.Config.ColorsPerRoles.TryGetValue(player.Role, out string color) && player.CustomInfo != null && player.CustomInfo != string.Empty)
+                    {
+                        player.CustomInfo = $"<color=#{color}>{player.CustomInfo}</color>";
+                    }
+
+                    Log.Debug($"Player Name: {player.Nickname}\nPlayer Nickname: {player.DisplayNickname}\nPlayer Custom Info: {player.CustomInfo}", Plugin.Instance.Config.Debug);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error($"An error occured while trying to set player info:\n{e}");
+                else
+                {
+                    if (role != RoleType.Scp0492)
+                    {
+                        player.CustomInfo = string.Empty;
+                        player.DisplayNickname =
+                            Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
+                            i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
+                            player.Inventory.UserInventory.Items.Values.Where(
+                            i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
+                    }
+                }
             }
         }
     }

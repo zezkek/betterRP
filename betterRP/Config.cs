@@ -27,7 +27,7 @@
             [RoleType.FacilityGuard] = "757575",
             [RoleType.NtfCaptain] = "000080",
             [RoleType.NtfPrivate] = "8BC5FF",
-            [RoleType.NtfSergeant] = "990000",
+            [RoleType.NtfSergeant] = "0180DA",
             [RoleType.NtfSpecialist] = "0180DA",
             [RoleType.Scientist] = "FFD966",
             [RoleType.Scp049] = "990000",
@@ -70,6 +70,7 @@
                 [ItemType.None] = "Научный сотрудник",
                 [ItemType.KeycardScientist] = "Научный сотрудник",
                 [ItemType.KeycardResearchCoordinator] = "Координатор исследований",
+                [ItemType.KeycardContainmentEngineer] = "Инженер Комплекса",
                 [ItemType.KeycardZoneManager] = "Заведующий Зоны",
                 [ItemType.KeycardFacilityManager] = "Заведующий Комплекса",
             },
@@ -112,6 +113,44 @@
             [RoleType.None] = "None",
         };
 
+        public List<RoleType> WarheadWarning { get; set; } = new List<RoleType>
+        {
+            RoleType.NtfCaptain,
+            RoleType.NtfSpecialist,
+            RoleType.NtfSergeant,
+            RoleType.NtfPrivate,
+        };
+
+        public List<RoleType> DirectTOC { get; set; } = new List<RoleType>
+        {
+            RoleType.NtfCaptain,
+            RoleType.ChaosMarauder,
+        };
+
+        public List<RoomType> RoomsWithConnToTOC { get; set; } = new List<RoomType>
+        {
+            RoomType.Surface,
+        };
+
+        public Dictionary<RoleType, Dictionary<string, List<ItemType>>> ItemsPerSubroles { get; set; } = new Dictionary<RoleType, Dictionary<string, List<ItemType>>>
+        {
+            [RoleType.Scientist] = new Dictionary<string, List<ItemType>>
+            {
+                ["Заведующий Зоны"] = new List<ItemType>
+                {
+                    ItemType.Radio,
+                },
+                ["Заведующий Комплекса"] = new List<ItemType>
+                {
+                    ItemType.Radio,
+                },
+                ["Инженер Комплекса"] = new List<ItemType>
+                {
+                    ItemType.Radio,
+                },
+            },
+        };
+
         [Description("Enable or disable player resize")]
         public bool PlayerResizeEnabled { get; set; } = true;
 
@@ -129,7 +168,7 @@
         public float TimeInTheWay { get; set; } = 60;
 
         [Description("Max distance between SCP and player while containming")]
-        public float Distance { get; set; } = 10f;
+        public float EvacuationDistance { get; set; } = 10f;
 
         [Description("Ignored roles")]
         public List<RoleType> Roles { get; set; } = new List<RoleType> { RoleType.Scp079, RoleType.Scp106 };
