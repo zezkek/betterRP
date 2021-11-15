@@ -88,7 +88,7 @@
                                 Log.Debug("Giving flash effects for 939. Distance less than 15");
                             }
 
-                            if (!ev.IsFrag)
+                            if (ev.GrenadeType != GrenadeType.FragGrenade)
                             {
                                 player.EnableEffect(EffectType.Flashed, duration: 6);
                             }
@@ -101,7 +101,7 @@
                                 Log.Debug("Giving flash effects for others. Distance less than 15");
                             }
 
-                            if (!ev.IsFrag)
+                            if (ev.GrenadeType != GrenadeType.FragGrenade)
                             {
                                 player.EnableEffect(EffectType.Flashed, duration: 6);
                             }
@@ -136,7 +136,7 @@
                                 Log.Debug("Giving flash effects for 939. Distance less than 25");
                             }
 
-                            if (!ev.IsFrag)
+                            if (ev.GrenadeType != GrenadeType.FragGrenade)
                             {
                                 player.EnableEffect(EffectType.Flashed, duration: 3);
                             }

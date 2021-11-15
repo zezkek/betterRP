@@ -100,7 +100,7 @@ namespace BetterRP.Commands.TOC
             { RoleType.ClassD, 1 },
         };
 
-        private static bool spawnBlock;
+        private static bool supportCalled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TOC"/> class.
@@ -151,35 +151,51 @@ namespace BetterRP.Commands.TOC
         {
             if (ev.IsAllowed)
             {
-                Log.Debug($"Catched allowed RespawningTeamEvent");
-                if (spawnBlock == false)
+                if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
                 {
-                    spawnBlock = true;
-                    ev.IsAllowed = false;
-                    Log.Debug($"Usual spawning has been disbled.");
-                    if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
-                    {
-                        Respawn.ForceWave(Respawning.SpawnableTeamType.ChaosInsurgency, false);
-                        Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
-                        OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
-                        OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
-                        Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
-                        Plugin.Instance.NewCoroutine(Evacuate(Team.CHI, true));
-                    }
-                    else if (ev.NextKnownTeam == Respawning.SpawnableTeamType.NineTailedFox)
-                    {
-                        Respawn.ForceWave(Respawning.SpawnableTeamType.NineTailedFox, false);
-                        Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
-                        OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
-                        OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
-                        Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
-                        Plugin.Instance.NewCoroutine(Evacuate(Team.MTF, true));
-                    }
+                    Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);
+                    OnEvacuateCooldownCHI = Time.time + Plugin.Instance.Config.CooldownEv;
+                    OnSupportCooldownCHI = Time.time + Plugin.Instance.Config.CooldownSup;
+                    Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
+                    Plugin.Instance.NewCoroutine(Evacuate(Team.CHI, true));
                 }
-                else
+                else if (ev.NextKnownTeam == Respawning.SpawnableTeamType.NineTailedFox)
                 {
-                    ev.IsAllowed = true;
-                    spawnBlock = false;
+                    Log.Debug($"{ev.NextKnownTeam} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
+                    OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
+                    OnSupportCooldownMTF = Time.time + Plugin.Instance.Config.CooldownSup;
+                    Log.Debug($"New Evacuation/Support cooldown of {ev.NextKnownTeam}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}. Calling Evacuate coroutine with force command.", Plugin.Instance.Config.Debug);
+                    Plugin.Instance.NewCoroutine(Evacuate(Team.MTF, true));
+                    if (supportCalled)
+                    {
+                        supportCalled = false;
+                        List<RoleType> orderOfRolesToChange = new List<RoleType> { RoleType.NtfPrivate, RoleType.NtfSergeant };
+                        short countToChange = 1;
+                        MEC.Timing.CallDelayed(Timing.WaitForOneFrame, () =>
+                        {
+                            foreach (var role in orderOfRolesToChange)
+                            {
+                                if (countToChange <= 0)
+                                {
+                                    break;
+                                }
+
+                                foreach (var player in ev.Players)
+                                {
+                                    if (countToChange <= 0)
+                                    {
+                                        break;
+                                    }
+
+                                    if (role == player.Role)
+                                    {
+                                        player.SetRole(RoleType.NtfSpecialist);
+                                        countToChange--;
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -492,6 +508,7 @@ namespace BetterRP.Commands.TOC
                 Respawn.PlayEffect(RespawnEffectType.SummonNtfChopper);
                 Log.Debug($"Chopper has been called. Waiting for {18f} sec.", Plugin.Instance.Config.Debug);
                 yield return Timing.WaitForSeconds(18f);
+                supportCalled = true;
                 Respawn.ForceWave(Respawning.SpawnableTeamType.NineTailedFox, false);
                 Log.Debug($"{team} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {team}: {OnEvacuateCooldownMTF}/{OnSupportCooldownMTF}.", Plugin.Instance.Config.Debug);
                 OnEvacuateCooldownMTF = Time.time + Plugin.Instance.Config.CooldownEv;
@@ -502,6 +519,7 @@ namespace BetterRP.Commands.TOC
             else if (team == Team.CHI)
             {
                 Respawn.PlayEffect(RespawnEffectType.SummonChaosInsurgencyVan);
+                Log.Debug($"Car has been called. Waiting for {13f} sec.", Plugin.Instance.Config.Debug);
                 yield return Timing.WaitForSeconds(13f);
                 Respawn.ForceWave(Respawning.SpawnableTeamType.ChaosInsurgency, false);
                 Log.Debug($"{team} has been spawned without sound.\nPrevious Evacuation/Support cooldown of {team}: {OnEvacuateCooldownCHI}/{OnSupportCooldownCHI}.", Plugin.Instance.Config.Debug);

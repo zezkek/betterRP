@@ -53,16 +53,16 @@
                         List<string> display = new List<string> { };
                         display.AddRange(this.AbilitiesCheck(player));
 
-                        Log.Debug($"Total count of rows after ability check: {display.Count}.");
+                        Log.Debug($"Total count of rows after ability check: {display.Count}.", Plugin.Instance.Config.Debug);
                         if ((player.Team == Team.MTF && player.Role != RoleType.FacilityGuard) || player.Team == Team.CHI)
                         {
                             display.Add(this.TocCheck(player, ref nukeNotifSwitcher));
                         }
 
-                        Log.Debug($"Total count of rows after toc check: {display.Count}.");
+                        Log.Debug($"Total count of rows after toc check: {display.Count}.", Plugin.Instance.Config.Debug);
                         display.AddRange(this.VentCheck(player));
 
-                        Log.Debug($"Total count of rows after vent check: {display.Count}.");
+                        Log.Debug($"Total count of rows after vent check: {display.Count}.", Plugin.Instance.Config.Debug);
                         if (display.Count > 0)
                         {
                             display.Add("\n ");
@@ -123,7 +123,7 @@
                             display[i] = this.stringStart + display[i].Replace("%COLOR", Plugin.Instance.Config.ColorsPerRoles[player.Role]) + this.stringEnd;
                         }
 
-                        Log.Debug($"Color has been changed to {Plugin.Instance.Config.ColorsPerRoles[player.Role]}. Total count of rows: {display.Count}");
+                        Log.Debug($"Color has been changed to {Plugin.Instance.Config.ColorsPerRoles[player.Role]}. Total count of rows: {display.Count}", Plugin.Instance.Config.Debug);
                         string result = string.Join(string.Empty, display);
 
                         Log.Debug($"Total count of symbols/rows: {result.Length}/{display.Count}.\n___________________________________________________________", Plugin.Instance.Config.Debug);
@@ -160,7 +160,7 @@
                 result.Add(Pattern.Replace("%PARAMNAME", "BYPASS").Replace("%COLOR", "6aa84f").Replace("%VALUE", "ДОСТУПНО"));
             }
 
-            Log.Debug($"Total count of ability rows: {result.Count}.");
+            Log.Debug($"Total count of ability rows: {result.Count}.", Plugin.Instance.Config.Debug);
             return result;
         }
 

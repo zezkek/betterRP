@@ -63,11 +63,11 @@
             {
                 default:
                     string msgAuthorDisplayNickname = string.Empty;
-                    string msgAdminInfo = $"ID: {playerRequester.Id} ИМЯ: {playerRequester.Nickname} РОЛЬ: {playerRequester.Role}";
+                    string msgAdminInfo = $"пользователя: {playerRequester.Nickname}. ID: {playerRequester.Id}\nРОЛЬ: {playerRequester.Role}.";
                     if (playerRequester.DisplayNickname != null && playerRequester.DisplayNickname != string.Empty)
                     {
                         msgAuthorDisplayNickname = playerRequester.DisplayNickname;
-                        msgAdminInfo += $"РП-ИМЯ: \"{playerRequester.Nickname}\"";
+                        msgAdminInfo += $" РП-ИМЯ: \"{playerRequester.DisplayNickname}\"";
                     }
                     else
                     {

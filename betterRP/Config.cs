@@ -156,13 +156,20 @@
 
         public string ItemConfigFolder { get; set; } = Path.Combine(Paths.Configs, "BetterRP");
 
+        [Description("Startung delay for blackout")]
         public float BlackoutDelay { get; set; } = 15f;
 
+        [Description("After starting blackout sets min level of light for rooms")]
+        public float LightIntensityMin { get; set; } = 50f;
+
+        [Description("After starting blackout sets min level of light for rooms")]
+        public float LightIntensityMax { get; set; } = 100f;
+
         [Description("### TOC CONFIG THERE. Evacuation Cooldown ###")]
-        public int CooldownEv { get; set; } = 150;
+        public int CooldownEv { get; set; } = 90;
 
         [Description("Cooldown of support")]
-        public int CooldownSup { get; set; } = 300;
+        public int CooldownSup { get; set; } = 150;
 
         [Description("Time to wait for support")]
         public float TimeInTheWay { get; set; } = 60;

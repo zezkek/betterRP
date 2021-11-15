@@ -39,22 +39,27 @@
             foreach (var item in Map.Rooms)
             {
                 this.defaultBright.Add(item, item.LightIntensity);
-                item.LightIntensity = UnityEngine.Random.Range(this.defaultBright[item] * 0.4f, this.defaultBright[item]);
+                item.LightIntensity = UnityEngine.Random.Range(
+                    this.defaultBright[item] * (Plugin.Instance.Config.LightIntensityMin / 100),
+                    this.defaultBright[item] * (Plugin.Instance.Config.LightIntensityMax / 100));
             }
 
             while (Round.IsStarted)
             {
                 List<Room> rooms = Map.Rooms.ToList();
                 rooms.ShuffleList();
+                float time = UnityEngine.Random.Range(1f, 7f);
                 for (int i = 0; i < 5; i++)
                 {
-                    rooms[i].TurnOffLights(5f);
+                    rooms[i].TurnOffLights(time);
                 }
 
-                yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(1f, 7f));
+                yield return MEC.Timing.WaitForSeconds(time);
                 for (int i = 0; i < 5; i++)
                 {
-                    rooms[i].LightIntensity = UnityEngine.Random.Range(this.defaultBright[rooms[i]] * 0.4f, this.defaultBright[rooms[i]]);
+                    rooms[i].LightIntensity = UnityEngine.Random.Range(
+                        this.defaultBright[rooms[i]] * (Plugin.Instance.Config.LightIntensityMin / 100),
+                        this.defaultBright[rooms[i]] * (Plugin.Instance.Config.LightIntensityMax / 100));
                 }
 
                 yield return MEC.Timing.WaitForSeconds(UnityEngine.Random.Range(30f, 90f));

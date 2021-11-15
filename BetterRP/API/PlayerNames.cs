@@ -123,12 +123,13 @@
 
         private IEnumerator<float> SetName(Player player, RoleType role)
         {
+            string customInfo = player.CustomInfo;
+            string displayNickname = player.DisplayNickname;
             yield return MEC.Timing.WaitForSeconds(0.1f);
             if (Plugin.Instance.Config.PlayerNamesEnabled && player != null && role != RoleType.None)
             {
                 string selectedname;
-                string customInfo = player.CustomInfo;
-                string displayNickname = player.DisplayNickname;
+
                 player.CustomInfo = string.Empty;
                 player.DisplayNickname = string.Empty;
                 if (player.Team != Team.SCP)
@@ -143,7 +144,7 @@
                             }
 
                             string number;
-                            for (; ; )
+                            for (; ;)
                             {
                                 number = $"{UnityEngine.Random.Range(0, 1000)}";
                                 if (UnityEngine.Random.Range(0, 100) < 90)
@@ -180,6 +181,7 @@
                                 player.Inventory.UserInventory.Items.Values.Where(
                                 i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
                             break;
+#if NameChangeDelay
                         case RoleType.Spectator:
                             Log.Debug($"Spectator catched. PlayableScps.Scp049.TimeToRevive (WaitForReturnOldName): {PlayableScps.Scp049.TimeToRevive}.");
                             yield return MEC.Timing.WaitForSeconds(PlayableScps.Scp049.TimeToRevive);
@@ -209,6 +211,7 @@
 
                             this.militaryRole.Remove(player.UserId);
                             yield break;
+#endif
                         default:
                             if (player.Team == Team.CHI || player.Team == Team.MTF)
                             {
@@ -297,15 +300,12 @@
                 }
                 else
                 {
-                    if (role != RoleType.Scp0492)
-                    {
-                        player.CustomInfo = string.Empty;
-                        player.DisplayNickname =
-                            Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
-                            i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
-                            player.Inventory.UserInventory.Items.Values.Where(
-                            i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
-                    }
+                    player.CustomInfo = string.Empty;
+                    player.DisplayNickname =
+                        Plugin.Instance.Config.RoleNames[player.Role][player.Inventory.UserInventory.Items.Values.Where(
+                        i => i.Category == ItemCategory.Keycard).Count() == 0 ? ItemType.None :
+                        player.Inventory.UserInventory.Items.Values.Where(
+                        i => i.Category == ItemCategory.Keycard).First().ItemTypeId];
                 }
             }
         }
